@@ -1,0 +1,176 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div class="box box-solid">
+    <!-- /.box-header -->
+    <div class="box-body">
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
+                <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
+            </ol>
+            <div class="carousel-inner">
+                <div class="item active">                    
+                    <div class="container" style="background-color:whitesmoke">
+                        <img class="pull-right" style="max-height:200px" src="http://placehold.it/900x500/39CCCC/ffffff&amp;text=I+Love+Bootstrap" alt="" />
+                        <h2>Creative Ideas</h2>
+                        <h3 class="gap">Tincidunt condimentum eros</h3>
+                        <a class="btn btn-large btn-transparent" href="#">Learn More</a>
+                    </div>
+                </div>
+                <div class="item">                    
+                    <div class="container" style="background-color:mintcream">
+                        <img class="pull-right" style="max-height: 200px" src="http://placehold.it/900x500/3c8dbc/ffffff&amp;text=I+Love+Bootstrap" alt="" />
+                        <h2>Planning &amp; Analysis</h2>
+                        <h3 class="gap">Aenean ultricies mi vitast</h3>
+                        <a class="btn btn-large btn-transparent" href="#">Learn More</a>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="container" style="background-color:whitesmoke">
+                        <img class="pull-right" style="max-height: 200px" src="http://placehold.it/900x500/39CCCC/ffffff&amp;text=I+Love+Bootstrap" alt="" />
+                        <h2>Creative Ideas</h2>
+                        <h3 class="gap">Tincidunt condimentum eros</h3>
+                        <a class="btn btn-large btn-transparent" href="#">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                <span class="fa fa-angle-left"></span>
+            </a>
+            <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                <span class="fa fa-angle-right"></span>
+            </a>
+        </div>
+    </div>
+    <!-- /.box-body -->
+</div>
+
+        <div class="row">
+            <div class="col-md-9">
+                <div class="box box-default color-palette-box">
+                    <div class="box-header with-border" style="height:70px">
+                        <h3 class="box-title"><i class="fa fa-tag"></i> ค้นหา</h3>
+                        <div class="box-tools pull-right">
+                            <a class="btn btn-app">
+                                <i class="fa fa-home"></i> บ้านเดี่ยว
+                            </a>
+                            <a class="btn btn-app">
+                                <i class="fa fa-institution"></i> ทาวน์เฮ้าส์
+                            </a>
+                            <a class="btn btn-app">
+                                <i class="fa fa-building"></i> คอนโด
+                            </a>
+                            <a class="btn btn-app">
+                                <i class="fa fa-map-marker"></i> ที่ดิน
+                            </a>
+                        </div>        
+                       
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>ประเภท</label>
+                                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                        <option selected="selected">ทุกประเภท</option>
+                                        <option>บ้านเดี่ยว</option>
+                                        <option>ทาวน์เฮ้าส์</option>
+                                        <option>คอนโด</option>
+                                        <option>ที่ดิน</option>
+                                    </select>
+                               
+                                </div><!-- /.form-group -->
+                                <div class="form-group">
+                                    <label>จังหวัด</label>
+                                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                        <option selected="selected">Alabama</option>
+                                        <option>Alaska</option>
+                                        <option>California</option>
+                                        <option>Delaware</option>
+                                        <option>Tennessee</option>
+                                        <option>Texas</option>
+                                        <option>Washington</option>
+                                    </select>                                   
+                                </div><!-- /.form-group -->
+                            </div><!-- /.col -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>ราคา</label>
+                                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                        <option selected="selected">Alabama</option>
+                                        <option>Alaska</option>
+                                        <option>California</option>
+                                        <option>Delaware</option>
+                                        <option>Tennessee</option>
+                                        <option>Texas</option>
+                                        <option>Washington</option>
+                                    </select>
+                                </div><!-- /.form-group -->
+                                <div class="form-group">
+                                    <label>อำเภอ/เขต</label>
+                                    <select class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                        <option selected="selected">Alabama</option>
+                                        <option>Alaska</option>
+                                        <option>California</option>
+                                        <option>Delaware</option>
+                                        <option>Tennessee</option>
+                                        <option>Texas</option>
+                                        <option>Washington</option>
+                                    </select>
+                                </div><!-- /.form-group -->
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-danger" style="width:70px"><i class="fa fa-search"></i></button>
+                                </div><!-- /btn-group -->
+
+                            </div>
+                        </div>
+                      
+                        
+                    </div>
+                </div>
+                <!--View search-->
+                <div class="box box-default color-palette-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">รายการค้นหา</h3>
+                        <div class="box-tools pull-right">
+                            
+                            <button class="btn btn-box-tool"><i class="fa fa-th-large"></i></button>
+                            <button class="btn btn-box-tool"><i class="fa fa-th-list"></i></button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                          
+                        </div><!-- /.row -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="box box-default color-palette-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-tag"></i> Blog</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                           
+                        </div><!-- /.row -->                        
+                    </div><!-- /.box-body -->
+                </div>
+                <div class="box box-default color-palette-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><i class="fa fa-tag"></i> อื่นๆ</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                        </div><!-- /.row -->
+                    </div><!-- /.box-body -->
+                </div>
+            </div>
+        </div>
