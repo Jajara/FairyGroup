@@ -43,6 +43,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -158,13 +160,54 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BackEndController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\DBFairyGroup\Area.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\BuildingType.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\District.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\FairyGroup.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FairyGroup.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\FairyGroup.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\FairyGroup.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FairyGroup.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\PostBuilding.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\Province.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\ProvinceGroup.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\SubDistrict.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\User.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\UserType.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Home\ThaiAreaModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -1076,6 +1119,23 @@
     <Content Include="Scripts\AdminLTE-2.3.0\plugins\input-mask\phone-codes\phone-be.json" />
     <Content Include="Scripts\AdminLTE-2.3.0\plugins\input-mask\phone-codes\phone-codes.json" />
     <Content Include="Scripts\AdminLTE-2.3.0\README.md" />
+    <EntityDeploy Include="Models\DBFairyGroup\FairyGroup.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>FairyGroup.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\DBFairyGroup\FairyGroup.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>FairyGroup.edmx</DependentUpon>
+      <LastGenOutput>FairyGroup.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\DBFairyGroup\FairyGroup.edmx.diagram">
+      <DependentUpon>FairyGroup.edmx</DependentUpon>
+    </Content>
+    <Content Include="Models\DBFairyGroup\FairyGroup.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>FairyGroup.edmx</DependentUpon>
+      <LastGenOutput>FairyGroup.cs</LastGenOutput>
+    </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -1950,6 +2010,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

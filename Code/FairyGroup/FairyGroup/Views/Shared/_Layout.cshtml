@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="~/Scripts/TemplateLTE/plugins/daterangepicker/daterangepicker-bs3.css">
     <!-- bootstrap wysihtml5 - text editor -->
     <link rel="stylesheet" href="~/Scripts/TemplateLTE/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+    @*<link href="~/Scripts/TemplateLTE/dist/css/parallax-slider.css" rel="stylesheet" /*@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -49,7 +50,7 @@
     <script src="~/Scripts/TemplateLTE/bootstrap/js/bootstrap.min.js"></script>
     <!-- Morris.js charts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script src="~/Scripts/TemplateLTE/plugins/morris/morris.min.js"></script>
+    @*<script src="~/Scripts/TemplateLTE/plugins/morris/morris.min.js"></script>*@
     <!-- Sparkline -->
     <script src="~/Scripts/TemplateLTE/plugins/sparkline/jquery.sparkline.min.js"></script>
     <!-- jvectormap -->
@@ -71,12 +72,44 @@
     <!-- AdminLTE App -->
     <script src="~/Scripts/TemplateLTE/dist/js/app.min.js"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    <script src="~/Scripts/TemplateLTE/dist/js/pages/dashboard.js"></script>
+    @*<script src="~/Scripts/TemplateLTE/dist/js/pages/dashboard.js"></script>*@
     <!-- AdminLTE for demo purposes -->
     <script src="~/Scripts/TemplateLTE/dist/js/demo.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var url = window.location.pathname;
+            var activePage = url.substring(url.lastIndexOf('/') + 1);
+            $('.nav li a').each(function () {
+                var currentPage = this.href.substring(this.href.lastIndexOf('/') + 1);
+                if (activePage == currentPage) {
+                    $(this).parent().addClass('active');
+                }
+            });
+
+
+            try {
+                var auid = $.cookie('auid');
+                if (auid == null) {
+                    $(".user").hide();
+                    $(".userSignout").show();
+                }
+                else {
+                    $(".user").show();
+                    $(".userSignout").hide();
+
+                }
+            }
+            catch (err) {
+                $(".user").hide();
+                $(".userSignout").show();
+            }
+           
+
+        });
+    </script>
 
 </head>
-<body class="hold-transition skin-blue layout-top-nav">
+<body class="hold-transition skin-black-light layout-top-nav">
     <div class="wrapper">
         <header class="main-header">
             <nav class="navbar navbar-static-top">
@@ -92,44 +125,65 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse pull-right" id="navbar-collapse" style="padding-top:25px">
                         <ul class="nav navbar-nav">
-                            <li class="active">
-                                <a href="#">หน้าแรก</a>
+                            <li id="nHome">
+                                <a href="@Url.Action("Index", "Home", new { area = string.Empty })">หน้าแรก</a>
                             </li>
                             <li>
-                                <a href="#">ลงประกาศ</a>
+                                <a href="@Url.Action("Post", "Home", new { area = string.Empty })">ลงประกาศ</a>
                             </li>
-                            <li>
-                                <a href="#">เกี่ยวกับเรา</a>
+                            <li id="nAbout">
+                                <a href="@Url.Action("About", "Home", new { area = string.Empty })">เกี่ยวกับ Fairy Group</a>
                             </li>
-                            <li>
-                                <a href="#">ติดต่อเรา</a>
+                            <li id="nContact">
+                                <a href="@Url.Action("Contact", "Home", new { area = string.Empty })">ติดต่อเรา</a>
                             </li>
-                            <li>
-                                <a href="#">สมัครสมาชิก</a>
+                            <li class="userSignout">
+                                <a href="@Url.Action("Regist", "Home", new { area = string.Empty })">สมัครสมาชิก</a>
                             </li>
-                            <li>
-                                <a href="#">เข้าสู่ระบบ</a>
-                            </li>
-                            <li>
-                                <a href="#">ออกจากระบบ</a>
+                            <li class="userSignout">
+                                <a href="@Url.Action("Login", "Home", new { area = string.Empty })">เข้าสู่ระบบ</a>
+                            </li>                            
+                            <li class="dropdown user user-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-fw fa-user"></i>
+                                    <span class="hidden-xs">Jirachat Tarasap</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <!-- User image -->
+                                    <li class="user-header" style="height:75px">
+                                        <p>
+                                            Jirachat Tarasap
+                                            <small>System Admin</small>
+                                        </p>
+                                    </li>
+                                    <!-- Menu Footer-->
+                                    <li class="user-footer">
+                                        <div class="pull-left">
+                                            <a href="@Url.Action("Profile", "Home", new { area = string.Empty })" class="btn btn-default btn-flat">Profile</a>
+                                        </div>
+                                        <div class="pull-right">
+                                            <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                        </div>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </div><!-- /.navbar-custom-menu -->
                 </div><!-- /.container-fluid -->
             </nav>
         </header>
+
+        <div class="content-wrapper">
+            <div class="container">
+                @RenderBody()
+            </div><!-- /.container -->
+        </div><!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <div class="container">
+
+                <strong> &copy; 2016 <a href="http://www.fairygroup.co.th">Fairy Group Co,.Ltd</a></strong>
+            </div><!-- /.container -->
+        </footer>
     </div>
-    <div class="content-wrapper">
-        <div class="container" style="padding-top:20px">
-            @RenderBody()
-        </div><!-- /.container -->
-    </div><!-- /.content-wrapper -->
-    <footer class="main-footer">
-        <div class="container">
-
-            <strong> &copy; 2016 <a href="http://www.fairygroup.co.th">Fairy Group Co,.Ltd</a></strong>
-        </div><!-- /.container -->
-    </footer>
-
 </body>
 </html>

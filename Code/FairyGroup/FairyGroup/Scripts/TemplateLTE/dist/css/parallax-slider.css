@@ -1,0 +1,90 @@
+.carousel-inner {
+        background-color: LightSteelBlue;
+    }
+    .slider-container {
+        padding: 10px 80px 10px 30px;
+    }
+     .slider-container h2 {
+        font-family: "Boogaloo" !important;
+        font-weight: normal !important;
+        color: #fff;
+        font-size: 36px;
+        width: 50%;
+        top: 60px;
+        white-space: nowrap;
+        z-index: 10;
+        animation: fromLeftAnim1 0.6s ease-in 0.6s both;
+        left: 10%;
+        opacity: 1;
+        text-rendering: optimizelegibility;
+    }
+    .slider-container h3 {
+        animation: fromLeftAnim2 0.6s ease-in 0.6s both;
+        left: 10%;
+        opacity: 1;
+        width: 55%;
+        top: 155px;
+        color: navy;
+        font-size: 16px;
+        line-height: 26px;
+        height: 60px;
+        font-style: italic;
+        font-family: 'Economica', Arial, sans-serif;
+        font-weight: 400;
+        font-style: italic;
+        margin: 0 0 10px;
+        display: block;
+        -webkit-margin-before: 1em;
+        -webkit-margin-after: 1em;
+        -webkit-margin-start: 0px;
+        -webkit-margin-end: 0px;
+    }
+    .slider-container a {
+        animation: fromLeftAnim3 0.4s ease-in 1.2s both;
+        left: 10%;
+        opacity: 1;
+        top: 270px;
+        border-radius: 30px;
+        box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+        color: #fff;
+        text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+        border: 5px solid rgba(255,255,255,0.8);
+        padding: 2px 20px 0px;
+        font-size: 16px;
+        line-height: 25px;
+        text-align: center;
+        background: rgba(255,255,255,0.2);
+        text-decoration: none;
+        font-family: fantasy, Arial, sans-serif;
+    }
+
+        .slider-container img {
+            height: auto;
+            max-width: 100%;
+            vertical-align: middle;
+            border: 0;
+            text-align: center;
+            line-height: 350px;
+            margin-right: auto;
+        }
+@media screen and (max-width: 768px) {
+    .slider-container h3 {
+        width: 100%;
+    }
+
+    .slider-container img {
+        /*visibility: hidden;*/
+        display: none;
+    }
+}
+@media screen and (max-width: 667px) {
+    .slider-container h3 {
+        width: 110%;
+    }
+}
+@media screen and (max-width: 384px) {
+    .slider-container h3 {
+        width: 130%;
+        font-size: 12px;
+    }
+}
