@@ -127,5 +127,9 @@ namespace FairyGroup.Controllers
             }
         }
 
+        //public JsonResult getPostBuilding(int BuildingTypeID, int priceID, int ProvinceID, int DistrictID, string keySearch)
+        //{ 
+            
+        //}
     }
 }
