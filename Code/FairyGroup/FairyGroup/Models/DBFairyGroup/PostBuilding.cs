@@ -27,5 +27,6 @@ namespace FairyGroup.Models.DBFairyGroup
         public Nullable<System.DateTime> CreateDate { get; set; }
         public string Description { get; set; }
         public Nullable<int> PriorityID { get; set; }
+        public Nullable<System.DateTime> UpdateDate { get; set; }
     }
 }

@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- fullCalendar 2.2.5-->
+    <link rel="stylesheet" href="~/Scripts/TemplateLTE/plugins/fullcalendar/fullcalendar.min.css">
+    <link rel="stylesheet" href="~/Scripts/TemplateLTE/plugins/fullcalendar/fullcalendar.print.css" media="print">
     <!-- Theme style -->
     <link rel="stylesheet" href="~/Scripts/TemplateLTE/dist/css/AdminLTE.min.css">
     <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -75,6 +78,7 @@
     @*<script src="~/Scripts/TemplateLTE/dist/js/pages/dashboard.js"></script>*@
     <!-- AdminLTE for demo purposes -->
     <script src="~/Scripts/TemplateLTE/dist/js/demo.js"></script>
+    <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             var url = window.location.pathname;
@@ -103,13 +107,27 @@
                 $(".user").hide();
                 $(".userSignout").show();
             }
-           
+
 
         });
+
+        function getDataWithParam(Url, Param) {
+            $.ajax({
+                type: "GET",
+                url: Url,
+                data: Param,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    return data;
+                }
+            });
+        }
+
     </script>
 
 </head>
-<body class="hold-transition skin-black-light layout-top-nav">
+<body class="hold-transition skin-black-light layout-top-nav" >
     <div class="wrapper">
         <header class="main-header">
             <nav class="navbar navbar-static-top">
@@ -173,7 +191,7 @@
             </nav>
         </header>
 
-        <div class="content-wrapper">
+        <div class="content-wrapper" style="background-image: url('/Images/city-streets-skyline-buildings.jpg');">
             <div class="container">
                 @RenderBody()
             </div><!-- /.container -->

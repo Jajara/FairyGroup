@@ -126,10 +126,58 @@ namespace FairyGroup.Controllers
                 throw ex;
             }
         }
+        public JsonResult getPriceSelect()
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    var md = (from b in db.PriceSelections
+                              select b).ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
 
-        //public JsonResult getPostBuilding(int BuildingTypeID, int priceID, int ProvinceID, int DistrictID, string keySearch)
-        //{ 
-            
-        //}
+                throw ex;
+            }
+        }
+
+        public JsonResult getCompany()
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    var md = (from c in db.CompanyProfiles
+                              select c).OrderBy(x=>x.OrderID).ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public JsonResult getPostBuilding(int BuildingTypeID, int priceID, int ProvinceID, int DistrictID, string keySearch)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    DateTime mindate = DateTime.Now.AddMonths(-3);
+                    var md = db.spPostBuilding_List(BuildingTypeID, priceID, ProvinceID, DistrictID, keySearch, mindate.ToString("yyyyMMdd")).ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
     }
 }

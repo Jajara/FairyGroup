@@ -1,0 +1,217 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Boogaloo">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Economica:700,400italic">
+<link href="~/Scripts/TemplateLTE/dist/css/parallax-slider.css" rel="stylesheet" />
+<style>
+    
+</style>
+<script type="text/javascript">
+    var Area;
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getBuildingType", "Home", new { area = string.Empty })",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                $("#cbBuilding option").remove();
+                $("#btGBuilding a").remove();
+
+                $("#cbBuilding").append('<option value=0>--ทั้งหมด--</option>');
+                for (var i = 0; i < data.length; i++) {
+                    $("#cbBuilding").append('<option value=' + data[i].BuildingTypeID + '>' + data[i].BuildingTypeName + '</option>');
+                    if (data[i].BuildingTypeIcon != null && data[i].BuildingTypeIcon != "")
+                        $("#btGBuilding").append('<a class="btn btn-app"><img class="fa" style="height: 26px; margin: auto;" src="../Images/BuildingsType/2d/' + data[i].BuildingTypeIcon + '" /> ' + data[i].BuildingTypeName + '</a>');
+                    else
+                        $("#btGBuilding").append('<a class="btn btn-app "><i class="fa fa-building" style="height: 26px;"></i> ' + data[i].BuildingTypeName + '</a>');
+                }
+            } //success
+        });
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getAreaThailand", "Home", new { area = string.Empty })",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+               
+                Area= data;
+
+                $("#cbProvince option").remove();
+                $("#cbProvince optgroup").remove();
+                $("#cbProvince").append('<option value=0>--ทั้งหมด--</option>');
+                for (var i = 0; i < data.mdProvinceGroup.length; i++) {             
+                    $("#cbProvince").append('<optgroup style="" id="aG' + data.mdProvinceGroup[i].ProvinceGroupID + '" label="' + data.mdProvinceGroup[i].ProvinceGroupName + '"></optgroup>');
+                    for (var j = 0; j < data.mdProvince.length; j++) {
+                        if (data.mdProvince[j].ProvinceGroupID == data.mdProvinceGroup[i].ProvinceGroupID)
+                            $('#aG' + data.mdProvinceGroup[i].ProvinceGroupID).append('<option  value=' + data.mdProvince[j].ProvinceID + '>' + data.mdProvince[j].ProvinceName + '</option>');
+                    }                    
+                }
+            } //success
+        });
+
+        
+
+        $("#cbProvince").change(function () {
+            getDistrict($("#cbProvince").val());
+        });
+        getDistrict(0);
+        function getDistrict(id) {
+            
+            var data = Area;
+            $("#cbDistrict option").remove();
+            $("#cbDistrict").append('<option value=0>--ทั้งหมด--</option>');
+            if (data != null && data.mdDistrict != null) {
+                for (var i = 0; i < data.mdDistrict.length; i++) {
+                    if (data.mdDistrict[i].ProvinceID == id)
+                        $("#cbDistrict").append('<option value=' + data.mdDistrict[i].DistrictID + '>' + data.mdDistrict[i].DistrictName + '</option>');
+                }
+            }
+        }
+       
+    });
+</script>
+
+
+    <div class="box box-solid" style="margin-top:20px">
+        <!-- /.box-header -->
+        <div class="box-body">
+            <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                    <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
+                    <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
+                </ol>
+                <div class="carousel-inner">
+                    <div class="item active">
+                        <div class="container slider-container">
+                            <img class="pull-right" style="max-height:200px" src="~/Images/slider-img/twitter.png" alt="" />
+                            <h2>Twitter Bootstrap</h2>
+                            <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
+                            <a class=" btn btn-large btn-transparent " href="#">Read more</a>
+
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="container slider-container">
+                            <img class="pull-right" style="max-height: 200px" src="~/Images/slider-img/responsive.png" alt="" />
+                            <h2>Responsive Design</h2>
+                            <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
+                            <a class="btn btn-large btn-transparent " href="#">Read more</a>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="container slider-container">
+                            <img class="pull-right" style="max-height: 200px" src="~/Images/slider-img/html5.png" alt="" />
+                            <h2>HTML5</h2>
+                            <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
+                            <a class="btn btn-large btn-transparent " href="#">Read more</a>
+                        </div>
+                    </div>
+                </div>
+                @*<a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                    <span class="fa fa-angle-left"></span>
+                </a>
+                <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                    <span class="fa fa-angle-right"></span>
+                </a>*@
+            </div>
+        </div>
+        <!-- /.box-body -->
+    </div>
+
+    <div class="row">
+        <div class="col-md-9">
+
+            <div class="box box-primary color-palette-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-search"></i> ค้นหา</h3>
+                </div>
+                <div class="box-body">
+                    <div id="btGBuilding" class="btn-group">                                                
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>ประเภท</label>
+                                <select id="cbBuilding" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true"></select>
+                            </div><!-- /.form-group -->
+                            <div id="divArea" class="form-group">
+                                <label>จังหวัด</label>
+                                <select id="cbProvince" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true"></select>
+                            </div><!-- /.form-group -->
+                        </div><!-- /.col -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>ราคา</label>
+                                <select id="cbAmount" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                    <option selected="selected" value='0'>ไม่กำหนด</option>
+                                    <option value='1'>> 1,000,000</option>
+                                    <option value='2'>1,000,000 - 2,000,000</option>
+                                    <option value='3'>2,000,000 - 3,000,000</option>
+                                    <option value='4'>3,000,000 - 5,000,000</option>
+                                    <option value='5'>5,000,000 - 10,000,000</option>
+                                    <option value='6'>10,000,000 - 20,000,000</option>
+                                    <option value='7'>< 20,000,000</option>
+                                </select>
+                                
+
+                            </div><!-- /.form-group -->
+                            <div class="form-group">
+                                <label>อำเภอ/เขต</label>
+                                <select id="cbDistrict" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true"></select>
+                            </div><!-- /.form-group -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-danger" style="width:70px"><i class="fa fa-search"></i></button>
+                            </div><!-- /btn-group -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--View search-->
+            <div class="box box-primary color-palette-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-list-alt"></i> รายการค้นหา</h3>
+                    <div class="box-tools pull-right">
+
+                        <button class="btn btn-box-tool"><i class="fa fa-th-large"></i></button>
+                        <button class="btn btn-box-tool"><i class="fa fa-th-list"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+
+                    </div><!-- /.row -->
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="box box-primary color-palette-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-tag"></i> Blog</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+
+                    </div><!-- /.row -->
+                </div><!-- /.box-body -->
+            </div>
+            <div class="box box-primary color-palette-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-tag"></i> อื่นๆ</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                    </div><!-- /.row -->
+                </div><!-- /.box-body -->
+            </div>
+        </div>
+    </div>

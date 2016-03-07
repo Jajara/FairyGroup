@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="FairyGroupModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="FairyGroupModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Area">
           <Key>
             <PropertyRef Name="AreaID" />
@@ -22,6 +22,15 @@
           <Property Name="BuildingTypeID" Type="int" Nullable="false" />
           <Property Name="BuildingTypeName" Type="varchar" MaxLength="50" />
           <Property Name="BuildingTypeIcon" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="CompanyProfile">
+          <Key>
+            <PropertyRef Name="ProfileID" />
+          </Key>
+          <Property Name="ProfileID" Type="int" Nullable="false" />
+          <Property Name="OrderID" Type="int" />
+          <Property Name="ProfileHeader" Type="varchar" MaxLength="100" />
+          <Property Name="ProfileBody" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="District">
           <Key>
@@ -48,6 +57,31 @@
           <Property Name="CreateDate" Type="datetime" />
           <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="PriorityID" Type="int" />
+          <Property Name="UpdateDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="PostType">
+          <Key>
+            <PropertyRef Name="PostTypeID" />
+          </Key>
+          <Property Name="PostTypeID" Type="int" Nullable="false" />
+          <Property Name="PostTypeName" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="PriceSelection">
+          <Key>
+            <PropertyRef Name="PriceID" />
+          </Key>
+          <Property Name="PriceID" Type="int" Nullable="false" />
+          <Property Name="minPrice" Type="numeric" Precision="18" Scale="2" />
+          <Property Name="maxPrice" Type="numeric" Precision="18" Scale="2" />
+          <Property Name="Description" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Priority">
+          <Key>
+            <PropertyRef Name="PriorityID" />
+          </Key>
+          <Property Name="PriorityID" Type="int" Nullable="false" />
+          <Property Name="PriorityName" Type="varchar" MaxLength="100" />
+          <Property Name="PriorityValue" Type="int" />
         </EntityType>
         <EntityType Name="Province">
           <Key>
@@ -102,19 +136,30 @@
           <Property Name="UserType" Type="varchar" MaxLength="50" />
           <Property Name="Description" Type="varchar" MaxLength="100" />
         </EntityType>
+        <Function Name="spPostBuilding_List" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="BuildingTypeID" Type="int" Mode="In" />
+          <Parameter Name="PriceID" Type="int" Mode="In" />
+          <Parameter Name="ProvinceID" Type="int" Mode="In" />
+          <Parameter Name="DistrictID" Type="int" Mode="In" />
+          <Parameter Name="KeySearch" Type="varchar(max)" Mode="In" />
+          <Parameter Name="MINDATE" Type="varchar" Mode="In" />
+        </Function>
         <EntityContainer Name="FairyGroupModelStoreContainer">
           <EntitySet Name="Area" EntityType="Self.Area" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BuildingType" EntityType="Self.BuildingType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyProfile" EntityType="Self.CompanyProfile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="District" EntityType="Self.District" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PostBuilding" EntityType="Self.PostBuilding" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PostType" EntityType="Self.PostType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PriceSelection" EntityType="Self.PriceSelection" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Priority" EntityType="Self.Priority" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Province" EntityType="Self.Province" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProvinceGroup" EntityType="Self.ProvinceGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubDistrict" EntityType="Self.SubDistrict" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserType" EntityType="Self.UserType" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="FairyGroupModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -161,6 +206,7 @@
           <Property Name="CreateDate" Type="DateTime" Precision="3" />
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="PriorityID" Type="Int32" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Province">
           <Key>
@@ -225,7 +271,73 @@
           <EntitySet Name="SubDistricts" EntityType="Self.SubDistrict" />
           <EntitySet Name="Users" EntityType="Self.User" />
           <EntitySet Name="UserTypes" EntityType="Self.UserType" />
+          <EntitySet Name="CompanyProfiles" EntityType="FairyGroupModel.CompanyProfile" />
+          <EntitySet Name="PostTypes" EntityType="FairyGroupModel.PostType" />
+          <EntitySet Name="Priorities" EntityType="FairyGroupModel.Priority" />
+          <EntitySet Name="PriceSelections" EntityType="FairyGroupModel.PriceSelection" />
+          <FunctionImport Name="spPostBuilding_List" ReturnType="Collection(FairyGroupModel.spPostBuilding_List_Result)">
+            <Parameter Name="BuildingTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="PriceID" Mode="In" Type="Int32" />
+            <Parameter Name="ProvinceID" Mode="In" Type="Int32" />
+            <Parameter Name="DistrictID" Mode="In" Type="Int32" />
+            <Parameter Name="KeySearch" Mode="In" Type="String" />
+            <Parameter Name="MINDATE" Mode="In" Type="String" />
+          </FunctionImport>
         </EntityContainer>
+        <EntityType Name="CompanyProfile">
+          <Key>
+            <PropertyRef Name="ProfileID" />
+          </Key>
+          <Property Name="ProfileID" Type="Int32" Nullable="false" />
+          <Property Name="OrderID" Type="Int32" />
+          <Property Name="ProfileHeader" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ProfileBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PostType">
+          <Key>
+            <PropertyRef Name="PostTypeID" />
+          </Key>
+          <Property Name="PostTypeID" Type="Int32" Nullable="false" />
+          <Property Name="PostTypeName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Priority">
+          <Key>
+            <PropertyRef Name="PriorityID" />
+          </Key>
+          <Property Name="PriorityID" Type="Int32" Nullable="false" />
+          <Property Name="PriorityName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="PriorityValue" Type="Int32" />
+        </EntityType>
+        <EntityType Name="PriceSelection">
+          <Key>
+            <PropertyRef Name="PriceID" />
+          </Key>
+          <Property Name="PriceID" Type="Int32" Nullable="false" />
+          <Property Name="minPrice" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="maxPrice" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <ComplexType Name="spPostBuilding_List_Result">
+          <Property Type="Int32" Name="PostBuildingID" Nullable="true" />
+          <Property Type="Int32" Name="BuildingTypeID" Nullable="true" />
+          <Property Type="Int32" Name="PostTypeID" Nullable="true" />
+          <Property Type="Decimal" Name="SalePrice" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="Int32" Name="ProvinceID" Nullable="true" />
+          <Property Type="Int32" Name="DistrictID" Nullable="true" />
+          <Property Type="Int32" Name="SubDistrictID" Nullable="true" />
+          <Property Type="Int32" Name="UserID" Nullable="true" />
+          <Property Type="String" Name="Mobile" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Telephone" Nullable="true" MaxLength="50" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Description" Nullable="true" />
+          <Property Type="Int32" Name="PriorityID" Nullable="true" />
+          <Property Type="String" Name="BuildingTypeName" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="PostTypeName" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="ProvinceName" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="DistrictName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="SubDistrictName" Nullable="true" MaxLength="200" />
+          <Property Type="Int32" Name="ZipCode" Nullable="true" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -264,6 +376,7 @@
           <EntitySetMapping Name="PostBuildings">
             <EntityTypeMapping TypeName="FairyGroupModel.PostBuilding">
               <MappingFragment StoreEntitySet="PostBuilding">
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
                 <ScalarProperty Name="PostBuildingID" ColumnName="PostBuildingID" />
                 <ScalarProperty Name="BuildingTypeID" ColumnName="BuildingTypeID" />
                 <ScalarProperty Name="PostTypeID" ColumnName="PostTypeID" />
@@ -338,6 +451,68 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="CompanyProfiles">
+            <EntityTypeMapping TypeName="FairyGroupModel.CompanyProfile">
+              <MappingFragment StoreEntitySet="CompanyProfile">
+                <ScalarProperty Name="ProfileBody" ColumnName="ProfileBody" />
+                <ScalarProperty Name="ProfileHeader" ColumnName="ProfileHeader" />
+                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+                <ScalarProperty Name="ProfileID" ColumnName="ProfileID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PostTypes">
+            <EntityTypeMapping TypeName="FairyGroupModel.PostType">
+              <MappingFragment StoreEntitySet="PostType">
+                <ScalarProperty Name="PostTypeName" ColumnName="PostTypeName" />
+                <ScalarProperty Name="PostTypeID" ColumnName="PostTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Priorities">
+            <EntityTypeMapping TypeName="FairyGroupModel.Priority">
+              <MappingFragment StoreEntitySet="Priority">
+                <ScalarProperty Name="PriorityValue" ColumnName="PriorityValue" />
+                <ScalarProperty Name="PriorityName" ColumnName="PriorityName" />
+                <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PriceSelections">
+            <EntityTypeMapping TypeName="FairyGroupModel.PriceSelection">
+              <MappingFragment StoreEntitySet="PriceSelection">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="maxPrice" ColumnName="maxPrice" />
+                <ScalarProperty Name="minPrice" ColumnName="minPrice" />
+                <ScalarProperty Name="PriceID" ColumnName="PriceID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="spPostBuilding_List" FunctionName="FairyGroupModel.Store.spPostBuilding_List">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FairyGroupModel.spPostBuilding_List_Result">
+                <ScalarProperty Name="PostBuildingID" ColumnName="PostBuildingID" />
+                <ScalarProperty Name="BuildingTypeID" ColumnName="BuildingTypeID" />
+                <ScalarProperty Name="PostTypeID" ColumnName="PostTypeID" />
+                <ScalarProperty Name="SalePrice" ColumnName="SalePrice" />
+                <ScalarProperty Name="ProvinceID" ColumnName="ProvinceID" />
+                <ScalarProperty Name="DistrictID" ColumnName="DistrictID" />
+                <ScalarProperty Name="SubDistrictID" ColumnName="SubDistrictID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
+                <ScalarProperty Name="BuildingTypeName" ColumnName="BuildingTypeName" />
+                <ScalarProperty Name="PostTypeName" ColumnName="PostTypeName" />
+                <ScalarProperty Name="ProvinceName" ColumnName="ProvinceName" />
+                <ScalarProperty Name="DistrictName" ColumnName="DistrictName" />
+                <ScalarProperty Name="SubDistrictName" ColumnName="SubDistrictName" />
+                <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
