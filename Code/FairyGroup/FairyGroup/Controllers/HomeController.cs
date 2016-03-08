@@ -144,6 +144,8 @@ namespace FairyGroup.Controllers
             }
         }
 
+
+
         public JsonResult getCompany()
         {
             try
@@ -169,7 +171,7 @@ namespace FairyGroup.Controllers
                 using (var db = new FairyGroupEntities())
                 {
                     DateTime mindate = DateTime.Now.AddMonths(-3);
-                    var md = db.spPostBuilding_List(BuildingTypeID, priceID, ProvinceID, DistrictID, keySearch, mindate.ToString("yyyyMMdd")).ToList();
+                    var md = db.spPostBuilding_List(BuildingTypeID, priceID, ProvinceID, DistrictID, keySearch, mindate.Year.ToString() + mindate.Month.ToString().PadLeft(2, '0') + mindate.Day.ToString().PadLeft(2, '0')).ToList();
                     return Json(md, JsonRequestBehavior.AllowGet);
                 }
             }

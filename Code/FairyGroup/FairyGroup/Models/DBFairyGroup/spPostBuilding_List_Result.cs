@@ -32,5 +32,6 @@ namespace FairyGroup.Models.DBFairyGroup
         public string DistrictName { get; set; }
         public string SubDistrictName { get; set; }
         public Nullable<int> ZipCode { get; set; }
+        public string UpdateStr { get; set; }
     }
 }

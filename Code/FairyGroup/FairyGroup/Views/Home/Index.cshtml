@@ -12,6 +12,7 @@
 <script type="text/javascript">
     var Area;
     $(document).ready(function () {
+        //-----------------------Initial-----------------------//
         $.ajax({
             type: "GET",
             url: "@Url.Action("getBuildingType", "Home", new { area = string.Empty })",
@@ -29,6 +30,31 @@
                     else
                         $("#btGBuilding").append('<a class="btn btn-app "><i class="fa fa-building" style="height: 26px;"></i> ' + data[i].BuildingTypeName + '</a>');
                 }
+            } //success
+        });
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getPriceSelect", "Home", new { area = string.Empty })",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                $("#cbAmount option").remove();
+                for (var i = 0; i < data.length; i++) {
+                    $("#cbAmount").append('<option value=' + data[i].PriceID + '>' + data[i].Description + '</option>');
+                }
+
+
+                //$("#cbBuilding option").remove();
+                //$("#btGBuilding a").remove();
+
+                //$("#cbBuilding").append('<option value=0>--ทั้งหมด--</option>');
+                //for (var i = 0; i < data.length; i++) {
+                //    $("#cbBuilding").append('<option value=' + data[i].BuildingTypeID + '>' + data[i].BuildingTypeName + '</option>');
+                //    if (data[i].BuildingTypeIcon != null && data[i].BuildingTypeIcon != "")
+                //        $("#btGBuilding").append('<a class="btn btn-app"><img class="fa" style="height: 26px; margin: auto;" src="../Images/BuildingsType/2d/' + data[i].BuildingTypeIcon + '" /> ' + data[i].BuildingTypeName + '</a>');
+                //    else
+                //        $("#btGBuilding").append('<a class="btn btn-app "><i class="fa fa-building" style="height: 26px;"></i> ' + data[i].BuildingTypeName + '</a>');
+                //}
             } //success
         });
         $.ajax({
@@ -51,13 +77,14 @@
                     }                    
                 }
             } //success
-        });
-        
-
+        }); 
         $("#cbProvince").change(function () {
             getDistrict($("#cbProvince").val());
         });
         getDistrict(0);
+        searchPostBuilding(0,0,0,0,'');
+        //-----------------------Initial-----------------------//
+        
         function getDistrict(id) {
             
             var data = Area;
@@ -73,38 +100,21 @@
        
     });
     function searchPostBuilding(BuildingTypeID, priceID, ProvinceID, DistrictID, keySearch)
-    {
+    {        
         $.ajax({
             type: "GET",
             url: "@Url.Action("getPostBuilding", "Home", new { area = string.Empty })",
             data: {
-                //BuildingTypeID: $("#cbBuilding").val(),
-                //priceID: $("#cbAmount").val(),
-                //ProvinceID: $("#cbProvince").val(),
-                //DistrictID: $("#cbDistrict").val(),
-                //keySearch: $("#cbProvince").val(),
                 BuildingTypeID: BuildingTypeID,
-                priceID: $("#cbAmount").val(),
-                ProvinceID: $("#cbProvince").val(),
-                DistrictID: $("#cbDistrict").val(),
-                keySearch: $("#cbProvince").val(),
+                priceID: priceID,
+                ProvinceID: ProvinceID,
+                DistrictID: DistrictID,
+                keySearch: keySearch
             },
             dataType: "json",
         contentType: "application/json; charset=utf-8",
         success: function (data) {
-               
-            Area= data;
-
-            $("#cbProvince option").remove();
-            $("#cbProvince optgroup").remove();
-            $("#cbProvince").append('<option value=0>--ทั้งหมด--</option>');
-            for (var i = 0; i < data.mdProvinceGroup.length; i++) {             
-                $("#cbProvince").append('<optgroup style="" id="aG' + data.mdProvinceGroup[i].ProvinceGroupID + '" label="' + data.mdProvinceGroup[i].ProvinceGroupName + '"></optgroup>');
-                for (var j = 0; j < data.mdProvince.length; j++) {
-                    if (data.mdProvince[j].ProvinceGroupID == data.mdProvinceGroup[i].ProvinceGroupID)
-                        $('#aG' + data.mdProvinceGroup[i].ProvinceGroupID).append('<option  value=' + data.mdProvince[j].ProvinceID + '>' + data.mdProvince[j].ProvinceName + '</option>');
-                }                    
-            }
+           debugger
         } //success
     });
         
@@ -186,18 +196,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>ราคา</label>
-                            <select id="cbAmount" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">
-                                <option selected="selected" value='0'>ไม่กำหนด</option>
-                                <option value='1'>> 1,000,000</option>
-                                <option value='2'>1,000,000 - 2,000,000</option>
-                                <option value='3'>2,000,000 - 3,000,000</option>
-                                <option value='4'>3,000,000 - 5,000,000</option>
-                                <option value='5'>5,000,000 - 10,000,000</option>
-                                <option value='6'>10,000,000 - 20,000,000</option>
-                                <option value='7'>< 20,000,000</option>
+                            <select id="cbAmount" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">               
                             </select>
-
-
                         </div><!-- /.form-group -->
                         <div class="form-group">
                             <label>อำเภอ/เขต</label>
@@ -220,15 +220,36 @@
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-list-alt"></i> รายการค้นหา</h3>
                 <div class="box-tools pull-right">
-
                     <button class="btn btn-box-tool"><i class="fa fa-th-large"></i></button>
                     <button class="btn btn-box-tool"><i class="fa fa-th-list"></i></button>
                 </div>
             </div>
             <div class="box-body">
-                <div class="row">
-
+                <div class="row" id="listBuilding">
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 thumbnail">
+                            <img src="~/BuildingImg/2016/000001/12799297_238347396508423_2775818766646584014_n.jpg" />
+                        </div>
+                        <div class="col-lg-8"></div>
+                        <div class="col-lg-2"></div>
+                    </div>
                 </div><!-- /.row -->
+                <div class="row" id="thumbnailBuilding">
+                    <div class="col-lg-4">
+                        
+                            <a class="thumbnail" href="http://merkent.com/bootstrap/mackbook-air-13"><img src="http://merkent.com/bootstrap/image/cache/data/apple/apple-macbook-air-13in-160x160.jpg" alt="Apple MacBook Air, 13-inch"></a>
+                            <div class="caption">
+                                <div class="name"><a href="http://merkent.com/bootstrap/mackbook-air-13">Apple MacBook Air, 13-inch</a></div>
+                                <div class="description">The MacBook Air is proof. It's designed around all-flash storage for better res...</div>
+                                <div class="price"><strong class="label label-info">$1.49</strong></div>
+                                <div class="cart">
+                                    <a class="btn btn-default btn-view hidden-tablet hidden-phone" href="http://merkent.com/bootstrap/mackbook-air-13"><i class="icon-zoom-in"></i></a>
+                                    <button type="button" onclick="addToCart('50',this);" class="btn btn-default">Add to <i class="icon-shopping-cart"></i></button>
+                                </div>
+                            </div>
+                       
+                    </div>
+                </div>
             </div>
         </div>
     </div>

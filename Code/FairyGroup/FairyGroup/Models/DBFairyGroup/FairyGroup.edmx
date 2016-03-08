@@ -337,6 +337,7 @@
           <Property Type="String" Name="DistrictName" Nullable="true" MaxLength="200" />
           <Property Type="String" Name="SubDistrictName" Nullable="true" MaxLength="200" />
           <Property Type="Int32" Name="ZipCode" Nullable="true" />
+          <Property Type="String" Name="UpdateStr" Nullable="true" MaxLength="20" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -510,6 +511,7 @@
                 <ScalarProperty Name="DistrictName" ColumnName="DistrictName" />
                 <ScalarProperty Name="SubDistrictName" ColumnName="SubDistrictName" />
                 <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
+                <ScalarProperty Name="UpdateStr" ColumnName="UpdateStr" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
