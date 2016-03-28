@@ -16,5 +16,6 @@ namespace FairyGroup.Models.DBFairyGroup
     {
         public int PostTypeID { get; set; }
         public string PostTypeName { get; set; }
+        public string PostTypeNameEn { get; set; }
     }
 }

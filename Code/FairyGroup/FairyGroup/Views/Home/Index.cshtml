@@ -7,11 +7,74 @@
 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Economica:700,400italic">
 <link href="~/Scripts/TemplateLTE/dist/css/parallax-slider.css" rel="stylesheet" />
 <style>
-    
+    .product-col {
+        padding: 15px 15px 10px;
+        margin-bottom: 20px;
+        background: #fff;
+        border: 1px solid #e8e8e8;
+    }
+    .product-col h4 {
+        font-size: 18px;
+        text-transform: uppercase;
+    }
+    .product-col .caption {
+        padding: 10px 0;
+    }
+    .product-col .description, .footer-links li {
+        font-family: 'Open Sans', sans-serif;
+    }
+    .product-col .description {
+        padding: 5px 0;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: justify;
+        color: #8b8b8b;
+        height:60px;
+    }
+    .product-col .price {
+        /*padding: 10px 0;*/
+    }
+    .product-col .price span.price-new {
+        color: #2f353b;
+        font-size: 24px;
+        padding-right: 5px;
+    }
+    .product-col .price span.price-old {
+        font-size: 18px;
+        color: #808080;
+        text-decoration: line-through;
+    }
+    .product-col .cart-button {
+        padding-top: 10px;
+    }
+    .product-col .cart-button .btn {
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+    }
+    .product-col .btn-cart {
+        -webkit-transition: all 0.3s ease-out;
+        -moz-transition: all 0.3s ease-out;
+        -o-transition: all 0.3s ease-out;
+        transition: all 0.3s ease-out;
+    }
+    .product-col .btn-cart {
+        padding: 0 0 0 15px;
+        font-size: 18px;
+        color: #fff;
+        text-transform: uppercase;
+        border: none;
+    }
+    .product-col .btn-wishlist:hover, .product-col .btn-compare:hover, .product-col .btn-cart, .product-col .btn-cart:hover .fa {
+        background: #4bac52;
+    }
 </style>
 <script type="text/javascript">
     var Area;
+    var search = 'l';
+    var data;
     $(document).ready(function () {
+
         //-----------------------Initial-----------------------//
         $.ajax({
             type: "GET",
@@ -21,7 +84,7 @@
             success: function (data) {
                 $("#cbBuilding option").remove();
                 $("#btGBuilding a").remove();
-
+                
                 $("#cbBuilding").append('<option value=0>--ทั้งหมด--</option>');
                 for (var i = 0; i < data.length; i++) {
                     $("#cbBuilding").append('<option value=' + data[i].BuildingTypeID + '>' + data[i].BuildingTypeName + '</option>');
@@ -42,19 +105,6 @@
                 for (var i = 0; i < data.length; i++) {
                     $("#cbAmount").append('<option value=' + data[i].PriceID + '>' + data[i].Description + '</option>');
                 }
-
-
-                //$("#cbBuilding option").remove();
-                //$("#btGBuilding a").remove();
-
-                //$("#cbBuilding").append('<option value=0>--ทั้งหมด--</option>');
-                //for (var i = 0; i < data.length; i++) {
-                //    $("#cbBuilding").append('<option value=' + data[i].BuildingTypeID + '>' + data[i].BuildingTypeName + '</option>');
-                //    if (data[i].BuildingTypeIcon != null && data[i].BuildingTypeIcon != "")
-                //        $("#btGBuilding").append('<a class="btn btn-app"><img class="fa" style="height: 26px; margin: auto;" src="../Images/BuildingsType/2d/' + data[i].BuildingTypeIcon + '" /> ' + data[i].BuildingTypeName + '</a>');
-                //    else
-                //        $("#btGBuilding").append('<a class="btn btn-app "><i class="fa fa-building" style="height: 26px;"></i> ' + data[i].BuildingTypeName + '</a>');
-                //}
             } //success
         });
         $.ajax({
@@ -62,10 +112,8 @@
             url: "@Url.Action("getAreaThailand", "Home", new { area = string.Empty })",
             dataType: "json",
             contentType: "application/json; charset=utf-8",
-            success: function (data) {
-               
+            success: function (data) {               
                 Area= data;
-
                 $("#cbProvince option").remove();
                 $("#cbProvince optgroup").remove();
                 $("#cbProvince").append('<option value=0>--ทั้งหมด--</option>');
@@ -83,10 +131,20 @@
         });
         getDistrict(0);
         searchPostBuilding(0,0,0,0,'');
-        //-----------------------Initial-----------------------//
-        
-        function getDistrict(id) {
-            
+        //-----------------------Initial-----------------------//  
+
+        $('#btSearch').click(function () {
+            var BuildingTypeID = $("#cbBuilding").val();
+            var priceID = $("#cbAmount").val();
+            var ProvinceID = $("#cbProvince").val();
+            var DistrictID = $("#cbDistrict").val();
+            var keySearch = $("#KeySeach").val();
+
+            searchPostBuilding(BuildingTypeID, priceID, ProvinceID, DistrictID, keySearch);
+        });
+
+
+        function getDistrict(id) {            
             var data = Area;
             $("#cbDistrict option").remove();
             $("#cbDistrict").append('<option value=0>--ทั้งหมด--</option>');
@@ -96,11 +154,51 @@
                         $("#cbDistrict").append('<option value=' + data.mdDistrict[i].DistrictID + '>' + data.mdDistrict[i].DistrictName + '</option>');
                 }
             }
-        }
-       
+        }       
     });
-    function searchPostBuilding(BuildingTypeID, priceID, ProvinceID, DistrictID, keySearch)
-    {        
+    function setList()
+    {
+        $("#products li").remove();
+
+        var data = $("#products").data("dat");
+        var page = $("#products").data("page");
+        var maxlist = page * 20 > data.length ? data.length : page * 20;
+        var minlist = (page * 20) - 20 < 0 ? 0 : (page * 20) - 20;
+
+        $('#headerSearch').text("ค้นหาพบ " + data.length + " ประกาศ | รายการที่ " + (minlist + 1) + " ถึง " + maxlist);
+        if (data.length == 0) {
+            $("#products").append('<li >ไม่่พบข้อมูล</li>');
+        }
+        else {
+
+            for (var i = 0; i < data.length ; i++) {
+                if (i >= minlist && i < maxlist) {
+                    var addclass = 'clearfix';
+                    if (i % 2 == 0) addclass += ' alt';
+                    $("#products").append(
+                        '<li class="' + addclass + '">' +
+                        '    <section class="left">' +
+                        '        <img src="' + data[i].ImgName + '" alt="default thumb" style="max-width:130px;max-height:130px" class="thumb">' +
+                        '        <h4 style="margin-top: 5px;margin-bottom: 5px;">' + data[i].PostTypeName + '!!! ' + data[i].BuildingTypeName + '</h4>' +
+                        //'        <span class="meta">ID: ' + (data[i].PostTypeID * 1000) + data[i].PostBuildingID + '</span>' +
+                        '        <span class="meta">' + data[i].Description + '</span>' +
+                        '    </section>' +
+                        '    <section class="right">' +
+                        '        <span class="price">' + data[i].SalePrice + ' ฿</span>' +
+                        '        <span class="darkview">' +
+                        '        <a href="javascript:void(0);" class="firstbtn"><img src="/Images/read-more-btn.png" alt="Read More..."></a>' +
+                        //'        <a href="javascript:void(0);"><img src="images/add-to-cart-btn.png" alt="Add to Cart"></a>'+
+                        '        </span>' +
+                        '    </section>' +
+                        '</li>'
+                        );
+                }
+            }
+        }        
+        
+    }
+    function searchPostBuilding(BuildingTypeID, priceID, ProvinceID, DistrictID, keySearch) {
+        debugger
         $.ajax({
             type: "GET",
             url: "@Url.Action("getPostBuilding", "Home", new { area = string.Empty })",
@@ -112,20 +210,43 @@
                 keySearch: keySearch
             },
             dataType: "json",
-        contentType: "application/json; charset=utf-8",
-        success: function (data) {
-           debugger
-        } //success
-    });
-        
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                debugger
+                $("#products").data("dat", data);
+
+
+                var totalpage = parseInt(data.length / 20);
+                if (data.length % 20 > 0) totalpage++;
+                //totalpage++;
+                var pag = $('#pagination').simplePaginator({
+                    totalPages: totalpage,
+                    pageChange: function (page) {
+                        $("#products").data("page", page);
+                        //$('#content').empty().text('Page is ' + page);                        
+                        setList();
+                    }
+                });
+                $('#changeTotalPages').click(function () {
+                    pag.simplePaginator('setTotalPages', 10);
+                })
+                $('#changePage').click(function () {
+                    pag.simplePaginator('changePage', 3);
+                })
+                $('#hide').click(function () {
+                    pag.simplePaginator('hide');
+                })
+                setList(); 
+            } //success
+        });
     }
 </script>
 
 
-<div class="box box-solid" style="margin-top:20px">
+<div class="box box-solid" style="margin-top:20px;">
     <!-- /.box-header -->
     <div class="box-body">
-        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" >
             <ol class="carousel-indicators">
                 <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
                 <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
@@ -139,7 +260,6 @@
                         <h2>Twitter Bootstrap</h2>
                         <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
                         <a class=" btn btn-large btn-transparent " href="#">Read more</a>
-
                     </div>
                 </div>
                 <div class="item">
@@ -209,7 +329,7 @@
                     <div class="input-group">
                         <input type="text" class="form-control" id="KeySeach">
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-danger" style="width:70px"><i class="fa fa-search"></i></button>
+                            <button type="button" class="btn btn-danger" id="btSearch" style="width:70px"><i class="fa fa-search"></i></button>
                         </div><!-- /btn-group -->
                     </div>
                 </div>
@@ -220,43 +340,24 @@
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-list-alt"></i> รายการค้นหา</h3>
                 <div class="box-tools pull-right">
-                    <button class="btn btn-box-tool"><i class="fa fa-th-large"></i></button>
-                    <button class="btn btn-box-tool"><i class="fa fa-th-list"></i></button>
+                    <a href="#" id="gridview" class="switcher"><img src="/Images/grid-view.png" alt="Grid"></a>
+                    <a href="#" id="listview" class="switcher active"><img src="/Images/list-view-active.png" alt="List"></a>
                 </div>
             </div>
             <div class="box-body">
-                <div class="row" id="listBuilding">
-                    <div class="col-lg-12">
-                        <div class="col-lg-2 thumbnail">
-                            <img src="~/BuildingImg/2016/000001/12799297_238347396508423_2775818766646584014_n.jpg" />
-                        </div>
-                        <div class="col-lg-8"></div>
-                        <div class="col-lg-2"></div>
-                    </div>
-                </div><!-- /.row -->
-                <div class="row" id="thumbnailBuilding">
-                    <div class="col-lg-4">
-                        
-                            <a class="thumbnail" href="http://merkent.com/bootstrap/mackbook-air-13"><img src="http://merkent.com/bootstrap/image/cache/data/apple/apple-macbook-air-13in-160x160.jpg" alt="Apple MacBook Air, 13-inch"></a>
-                            <div class="caption">
-                                <div class="name"><a href="http://merkent.com/bootstrap/mackbook-air-13">Apple MacBook Air, 13-inch</a></div>
-                                <div class="description">The MacBook Air is proof. It's designed around all-flash storage for better res...</div>
-                                <div class="price"><strong class="label label-info">$1.49</strong></div>
-                                <div class="cart">
-                                    <a class="btn btn-default btn-view hidden-tablet hidden-phone" href="http://merkent.com/bootstrap/mackbook-air-13"><i class="icon-zoom-in"></i></a>
-                                    <button type="button" onclick="addToCart('50',this);" class="btn btn-default">Add to <i class="icon-shopping-cart"></i></button>
-                                </div>
-                            </div>
-                       
-                    </div>
-                </div>
+                <label id="headerSearch"></label>
+                <ul id="products" class="list clearfix">
+
+                </ul>
+                <div id="pagination" class="text-center"></div>
+
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="box box-primary color-palette-box">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-tag"></i> Blog</h3>
+                <h3 class="box-title"><i class="fa fa-bullhorn"></i> ประกาศ</h3>
             </div>
             <div class="box-body">
                 <div class="row">
@@ -266,7 +367,7 @@
         </div>
         <div class="box box-primary color-palette-box">
             <div class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-tag"></i> อื่นๆ</h3>
+                <h3 class="box-title"><i class="fa fa-tag"></i> บล็อก</h3>
             </div>
             <div class="box-body">
                 <div class="row">
@@ -275,3 +376,7 @@
         </div>
     </div>
 </div>
+
+
+
+

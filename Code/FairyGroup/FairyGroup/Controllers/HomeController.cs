@@ -14,14 +14,12 @@ namespace FairyGroup.Controllers
         {
             return View();
         }
-
         public ActionResult About()
         {
 
 
             return View();
         }
-
         public ActionResult Contact()
         {
 
@@ -47,7 +45,6 @@ namespace FairyGroup.Controllers
 
             return View();
         }
-
         public JsonResult getAreaThailand()
         {
             try
@@ -71,7 +68,6 @@ namespace FairyGroup.Controllers
                 throw ex;
             }
         }
-
         public JsonResult getProvince()
         {
             try
@@ -143,9 +139,6 @@ namespace FairyGroup.Controllers
                 throw ex;
             }
         }
-
-
-
         public JsonResult getCompany()
         {
             try
@@ -153,7 +146,7 @@ namespace FairyGroup.Controllers
                 using (var db = new FairyGroupEntities())
                 {
                     var md = (from c in db.CompanyProfiles
-                              select c).OrderBy(x=>x.OrderID).ToList();
+                              select c).OrderBy(x => x.OrderID).ToList();
                     return Json(md, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -163,7 +156,6 @@ namespace FairyGroup.Controllers
                 throw ex;
             }
         }
-
         public JsonResult getPostBuilding(int BuildingTypeID, int priceID, int ProvinceID, int DistrictID, string keySearch)
         {
             try
@@ -178,6 +170,129 @@ namespace FairyGroup.Controllers
             catch (Exception ex)
             {
 
+                throw ex;
+            }
+        }
+        public JsonResult CheckLogin(string UserName, string Password)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    var login = (from u in db.Users
+                                 where u.UserName == UserName
+                                 select u).ToList();
+                    if (login.Count == 1)
+                    {
+                        if (login[0].Password == Password)
+                        {
+                            login[0].Password = "";
+                            return Json(login[0], JsonRequestBehavior.AllowGet);
+                        }
+                        else throw new Exception("Please Check User Or Password");
+                    }
+                    else { throw new Exception("Find not found User :" + UserName); }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        public JsonResult SendContact(string fname, string lname, string email, string phone, string subject, string body)
+        {
+            try
+            {
+                body = "From : " + fname + " " + lname
+                    + "<br/>Email : " + email
+                    + "<br/>Phone : " + phone + "<br/>" + body.Replace("[[|]]", "<");
+                using (var db = new FairyGroupEntities())
+                { 
+                    var ToMail = (from u in db.SystemConfigs
+                                    where u.ConfigCode == "ContactToEmail"
+                                    select u).SingleOrDefault().ConfigValue;
+                    var FromMail = (from u in db.SystemConfigs
+                                    where u.ConfigCode == "SendFrom"
+                                    select u).SingleOrDefault().ConfigValue;
+                    var Pass = (from u in db.SystemConfigs
+                                where u.ConfigCode == "PassSendFrom"
+                                select u).SingleOrDefault().ConfigValue;
+                    var SMTPMail = (from u in db.SystemConfigs
+                                    where u.ConfigCode == "ServerSMTPMail"
+                                    select u).SingleOrDefault().ConfigValue;
+                    var PortSendMail = (from u in db.SystemConfigs
+                                        where u.ConfigCode == "PortSendMail"
+                                        select u).SingleOrDefault().ConfigValue;
+
+
+
+                    System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
+                    System.Net.Mail.SmtpClient smtpClient = new System.Net.Mail.SmtpClient();
+
+                    try
+                    {
+                        System.Net.Mail.MailAddress fromAddress = new System.Net.Mail.MailAddress(FromMail);
+                        message.From = fromAddress;
+                        message.To.Add(ToMail);
+
+                        message.Subject = subject;
+                        message.IsBodyHtml = true;
+                        message.Body = body;
+                        // We use gmail as our smtp client
+                        smtpClient.Host = SMTPMail;
+                        smtpClient.Port = Convert.ToInt32(PortSendMail);
+                        smtpClient.EnableSsl = false;
+                        smtpClient.UseDefaultCredentials = true;
+                        smtpClient.Credentials = new System.Net.NetworkCredential(FromMail, Pass);
+
+                        smtpClient.Send(message);
+                        
+
+                        var mds = new LogMail {
+                            SendFrom=FromMail,
+                            SendTo = ToMail,
+                            Fname = fname,
+                            Lname=lname,
+                            uEmail = email,
+                            mSubject = subject,
+                            mBody = body,
+                            SendDate = DateTime.Now,
+                            CreateDate = DateTime.Now,
+                            LogMSG = "Success",
+                            SendStatus = "Success"
+                        };
+                        db.LogMails.Add(mds);
+                    }
+                    catch (Exception ex)
+                    {
+                        var mds = new LogMail
+                        {
+                            SendFrom = FromMail,
+                            SendTo = ToMail,
+                            Fname = fname,
+                            Lname = lname,
+                            uEmail = email,
+                            mSubject = subject,
+                            mBody = body,                            
+                            CreateDate = DateTime.Now,
+                            LogMSG = ex.Message,
+                            SendStatus = "Error"
+                        };
+                        db.LogMails.Add(mds);
+                    }
+                    int num = db.SaveChanges();
+
+                }
+               
+                
+
+
+                return Json("", JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }

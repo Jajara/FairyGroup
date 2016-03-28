@@ -29,7 +29,36 @@
         }       
         google.maps.event.addDomListener(window, 'load', initialize);
         //$("#compose-textarea").wysihtml5();
-        CKEDITOR.replace('compose-textarea');
+        CKEDITOR.replace('taCompose');
+
+        $('#btSend').click(function () {
+            debugger
+            var bodyT = CKEDITOR.instances['taCompose'].getData();
+            bodyT = bodyT.replace(/\</g, '[[|]]');//   /\+/g,' '
+            //var test = String.fromCharCode(22);
+            //test = String.fromCharCode(97);
+            //test = String.fromCharCode(49);
+            //test = String.fromCharCode(13);
+            //test = String.fromCharCode(14);
+            
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("SendContact", "Home", new { area = string.Empty })",
+                dataType: "json",
+                data: {
+                    fname: $("#tbFname").val(),
+                    lname: $("#tbLname").val(),
+                    email: $("#tbEmail").val(),
+                    phone: $("#tbPhone").val(),
+                    subject: 'Contract us from e-mail:' + $("#tbEmail").val() + ' (' + $("#tbFname").val() + ' ' + $("#tbLname").val() + ') | Phone:' + $("#tbPhone").val(),
+                    body: bodyT
+                },
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    debugger
+                } //success
+            });
+        });
     });
 </script>
 <style>
@@ -131,9 +160,6 @@
 <section class="content">
     <div class="row">
         <div class="col-md-9">
-
-   
-
             <div class="box box-primary color-palette-box">
                 <div class="box-header with-border">
                     <h3 class="box-title"><i class="fa fa-map-marker"></i> แผนที่</h3>
@@ -157,40 +183,61 @@
                     <h3 class="box-title"><i class="fa fa-comment"></i> ติดต่อเรา</h3>
                 </div>
                 <div class="box-body">
-                    <div class="form-group">
-                        <input class="form-control" placeholder="ชื่อ:">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <input class="form-control" id="tbFname" placeholder="ชื่อ:">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" placeholder="นามสกุล:">
+                    
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <input class="form-control" id="tbLname" placeholder="นามสกุล:">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" placeholder="Email:">
+                    <div class="col-sm-6">
+                        <div class="form-group input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-envelope"></i>
+                            </span>
+                            <input type="email" class="form-control" id="tbEmail" placeholder="Email">
+                        </div>
+                        
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" placeholder="เบอร์โทร:">
+                    <div class="col-sm-6">
+                        <div class="form-group input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <input type="text" class="form-control" id="tbPhone" placeholder="เบอร์โทร:">
+                        </div>
+
+                        
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" placeholder="หัวข้อ:">
+                    @*<div class="col-sm-12">
+                        <div class="form-group">
+                            <input class="form-control" placeholder="หัวข้อ:">
+                        </div>
+                    </div>*@
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <textarea id="taCompose" class="form-control" style="height: 300px"></textarea>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <textarea id="compose-textarea" class="form-control" style="height: 300px">
-                           
-                        </textarea>
-                    </div>
-                   
+                    
+
                 </div>
                 <div class="box-footer">
                     <div class="pull-right">           
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-envelope-o"></i> Send</button>
+                        <button type="button" id="btSend" class="btn btn-primary"><i class="fa fa-envelope-o"></i> Send</button>
                     </div>
-                    <button class="btn btn-default"><i class="fa fa-times"></i> Discard</button>
+                    
                 </div><!-- /.box-footer -->
             </div>
         </div>
         <div class="col-md-3">
             <div class="box box-primary color-palette-box">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-tag"></i> Blog</h3>
+                    <h3 class="box-title"><i class="fa fa-bullhorn"></i> ประกาศ</h3>
                 </div>
                 <div class="box-body">
                     <div class="row">
@@ -200,7 +247,7 @@
             </div>
             <div class="box box-primary color-palette-box">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-tag"></i> อื่นๆ</h3>
+                    <h3 class="box-title"><i class="fa fa-tag"></i> บล็อก</h3>
                 </div>
                 <div class="box-body">
                     <div class="row">

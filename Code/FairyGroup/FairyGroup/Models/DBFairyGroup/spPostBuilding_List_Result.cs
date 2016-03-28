@@ -16,7 +16,7 @@ namespace FairyGroup.Models.DBFairyGroup
         public Nullable<int> PostBuildingID { get; set; }
         public Nullable<int> BuildingTypeID { get; set; }
         public Nullable<int> PostTypeID { get; set; }
-        public Nullable<decimal> SalePrice { get; set; }
+        public string SalePrice { get; set; }
         public Nullable<int> ProvinceID { get; set; }
         public Nullable<int> DistrictID { get; set; }
         public Nullable<int> SubDistrictID { get; set; }
@@ -33,5 +33,6 @@ namespace FairyGroup.Models.DBFairyGroup
         public string SubDistrictName { get; set; }
         public Nullable<int> ZipCode { get; set; }
         public string UpdateStr { get; set; }
+        public string ImgName { get; set; }
     }
 }

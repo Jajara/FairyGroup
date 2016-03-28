@@ -40,6 +40,11 @@ namespace FairyGroup.Models.DBFairyGroup
         public virtual DbSet<PostType> PostTypes { get; set; }
         public virtual DbSet<Priority> Priorities { get; set; }
         public virtual DbSet<PriceSelection> PriceSelections { get; set; }
+        public virtual DbSet<PostBuildingImg> PostBuildingImgs { get; set; }
+        public virtual DbSet<BuildingTypeDetail> BuildingTypeDetails { get; set; }
+        public virtual DbSet<BuildingTypeGroupDetail> BuildingTypeGroupDetails { get; set; }
+        public virtual DbSet<SystemConfig> SystemConfigs { get; set; }
+        public virtual DbSet<LogMail> LogMails { get; set; }
     
         public virtual ObjectResult<spPostBuilding_List_Result> spPostBuilding_List(Nullable<int> buildingTypeID, Nullable<int> priceID, Nullable<int> provinceID, Nullable<int> districtID, string keySearch, string mINDATE)
         {
@@ -68,6 +73,20 @@ namespace FairyGroup.Models.DBFairyGroup
                 new ObjectParameter("MINDATE", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spPostBuilding_List_Result>("spPostBuilding_List", buildingTypeIDParameter, priceIDParameter, provinceIDParameter, districtIDParameter, keySearchParameter, mINDATEParameter);
+        }
+    
+        [DbFunction("FairyGroupEntities", "Split")]
+        public virtual IQueryable<Split_Result> Split(string @string, string delimiter)
+        {
+            var stringParameter = @string != null ?
+                new ObjectParameter("String", @string) :
+                new ObjectParameter("String", typeof(string));
+    
+            var delimiterParameter = delimiter != null ?
+                new ObjectParameter("Delimiter", delimiter) :
+                new ObjectParameter("Delimiter", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<Split_Result>("[FairyGroupEntities].[Split](@String, @Delimiter)", stringParameter, delimiterParameter);
         }
     }
 }

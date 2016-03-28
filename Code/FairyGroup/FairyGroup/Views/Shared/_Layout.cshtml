@@ -39,7 +39,7 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-
+    
 
     <!-- jQuery 2.1.4 -->
     <script src="~/Scripts/TemplateLTE/plugins/jQuery/jQuery-2.1.4.min.js"></script>
@@ -79,6 +79,14 @@
     <!-- AdminLTE for demo purposes -->
     <script src="~/Scripts/TemplateLTE/dist/js/demo.js"></script>
     <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js"></script>
+
+    <!--list-grid-switcher-->
+    <script src="~/Scripts/ListGrid/list-grid-switcher.js"></script>
+    <link href="~/Scripts/ListGrid/list-grid-switcher.css" rel="stylesheet" />
+    <!--Paginator-->
+    <script src="~/Scripts/Paginator/simple-bootstrap-paginator.js"></script>
+
+    <script src="~/Scripts/jquery.cookie.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             var url = window.location.pathname;
@@ -90,9 +98,10 @@
                 }
             });
 
-
-            try {
+            try {                
+                $.cookie.defaults = { path: '/' };
                 var auid = $.cookie('auid');
+                var auname = $.cookie('auname');
                 if (auid == null) {
                     $(".user").hide();
                     $(".userSignout").show();
@@ -100,7 +109,11 @@
                 else {
                     $(".user").show();
                     $(".userSignout").hide();
+                    $("#lbUserName p").remove();
+                    $("#lbUserName").append('<p>' + auname + '</p>');
 
+                    $("#spUser span").remove();
+                    $("#spUser").append('<span class="hidden-xs">' + auname + '</span>');                    
                 }
             }
             catch (err) {
@@ -108,7 +121,14 @@
                 $(".userSignout").show();
             }
 
-
+            $("#btSignOut").click(function () {
+                $.cookie.defaults = { path: '/' };
+                var cookies = $.cookie();
+                for(var cookie in cookies) {
+                    $.removeCookie(cookie);
+                }
+                window.location.reload();
+            });
         });
 
         function getDataWithParam(Url, Param) {
@@ -123,7 +143,6 @@
                 }
             });
         }
-
     </script>
 
 </head>
@@ -162,16 +181,15 @@
                                 <a href="@Url.Action("Login", "Home", new { area = string.Empty })">เข้าสู่ระบบ</a>
                             </li>                            
                             <li class="dropdown user user-menu">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="spUser">
                                     <i class="fa fa-fw fa-user"></i>
                                     <span class="hidden-xs">Jirachat Tarasap</span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <!-- User image -->
-                                    <li class="user-header" style="height:75px">
+                                    <li class="user-header" style="height:75px" id="lbUserName">
                                         <p>
                                             Jirachat Tarasap
-                                            <small>System Admin</small>
                                         </p>
                                     </li>
                                     <!-- Menu Footer-->
@@ -180,7 +198,8 @@
                                             <a href="@Url.Action("Profile", "Home", new { area = string.Empty })" class="btn btn-default btn-flat">Profile</a>
                                         </div>
                                         <div class="pull-right">
-                                            <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                            @*<button type="button" id="btSignOut" class="btn btn-default btn-flat">Sign Out</button>*@
+                                            <a href="#" id="btSignOut" class="btn btn-default btn-flat">Sign out</a>
                                         </div>
                                     </li>
                                 </ul>

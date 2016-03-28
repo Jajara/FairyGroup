@@ -4,12 +4,12 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="FairyGroupModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="FairyGroupModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Area">
           <Key>
             <PropertyRef Name="AreaID" />
           </Key>
-          <Property Name="AreaID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AreaID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ProvinceName" Type="varchar" MaxLength="100" />
           <Property Name="DistrictName" Type="varchar" MaxLength="200" />
           <Property Name="SubDistrictName" Type="varchar" MaxLength="200" />
@@ -22,6 +22,30 @@
           <Property Name="BuildingTypeID" Type="int" Nullable="false" />
           <Property Name="BuildingTypeName" Type="varchar" MaxLength="50" />
           <Property Name="BuildingTypeIcon" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="BuildingTypeDetail">
+          <Key>
+            <PropertyRef Name="BuildingTypeDetailID" />
+          </Key>
+          <Property Name="BuildingTypeDetailID" Type="int" Nullable="false" />
+          <Property Name="BuildingTypeID" Type="int" />
+          <Property Name="BuildingTypeGroupDetailID" Type="int" />
+          <Property Name="DetailName" Type="varchar" MaxLength="100" />
+          <Property Name="DetailNameEn" Type="varchar" MaxLength="100" />
+          <Property Name="DetailDataType" Type="varchar" MaxLength="20" />
+          <Property Name="DetailControlType" Type="varchar" MaxLength="20" />
+          <Property Name="DetailControlGroup" Type="varchar" MaxLength="20" />
+          <Property Name="isRequired" Type="bit" />
+          <Property Name="SortID" Type="int" />
+        </EntityType>
+        <EntityType Name="BuildingTypeGroupDetail">
+          <Key>
+            <PropertyRef Name="BuildingTypeGroupDetailID" />
+          </Key>
+          <Property Name="BuildingTypeGroupDetailID" Type="int" Nullable="false" />
+          <Property Name="BuildingTypeGroupDetailName" Type="varchar" MaxLength="50" />
+          <Property Name="BuildingTypeGroupDetailNameEn" Type="varchar" MaxLength="50" />
+          <Property Name="SortID" Type="int" />
         </EntityType>
         <EntityType Name="CompanyProfile">
           <Key>
@@ -39,6 +63,23 @@
           <Property Name="DistrictID" Type="int" Nullable="false" />
           <Property Name="ProvinceID" Type="int" />
           <Property Name="DistrictName" Type="varchar" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="LogMail">
+          <Key>
+            <PropertyRef Name="SendID" />
+          </Key>
+          <Property Name="SendID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SendFrom" Type="varchar" MaxLength="150" />
+          <Property Name="SendTo" Type="varchar" MaxLength="150" />
+          <Property Name="Fname" Type="varchar" MaxLength="200" />
+          <Property Name="Lname" Type="varchar" MaxLength="200" />
+          <Property Name="uEmail" Type="varchar" MaxLength="500" />
+          <Property Name="mSubject" Type="nvarchar" MaxLength="500" />
+          <Property Name="mBody" Type="nvarchar(max)" />
+          <Property Name="SendDate" Type="datetime" />
+          <Property Name="CreateDate" Type="datetime" />
+          <Property Name="LogMSG" Type="varchar" MaxLength="500" />
+          <Property Name="SendStatus" Type="varchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="PostBuilding">
           <Key>
@@ -58,6 +99,19 @@
           <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="PriorityID" Type="int" />
           <Property Name="UpdateDate" Type="datetime" />
+          <Property Name="DescriptionEn" Type="nvarchar(max)" />
+          <Property Name="PostTitle" Type="nvarchar" MaxLength="100" />
+          <Property Name="PostTitleEn" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="PostBuildingImg">
+          <Key>
+            <PropertyRef Name="PostBuildingImgID" />
+          </Key>
+          <Property Name="PostBuildingImgID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PostBuildingID" Type="int" Nullable="false" />
+          <Property Name="PathName" Type="varchar" MaxLength="1000" />
+          <Property Name="FileName" Type="varchar" MaxLength="500" />
+          <Property Name="CreateDate" Type="datetime" />
         </EntityType>
         <EntityType Name="PostType">
           <Key>
@@ -65,6 +119,7 @@
           </Key>
           <Property Name="PostTypeID" Type="int" Nullable="false" />
           <Property Name="PostTypeName" Type="varchar" MaxLength="50" />
+          <Property Name="PostTypeNameEn" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="PriceSelection">
           <Key>
@@ -87,7 +142,7 @@
           <Key>
             <PropertyRef Name="ProvinceID" />
           </Key>
-          <Property Name="ProvinceID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProvinceID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ProvinceName" Type="varchar" MaxLength="100" />
           <Property Name="ProvinceGroupID" Type="int" />
         </EntityType>
@@ -107,6 +162,15 @@
           <Property Name="DistrictID" Type="int" />
           <Property Name="SubDistrictName" Type="varchar" MaxLength="200" />
           <Property Name="ZipCode" Type="int" />
+        </EntityType>
+        <EntityType Name="SystemConfig">
+          <Key>
+            <PropertyRef Name="ConfigCode" />
+          </Key>
+          <Property Name="ConfigCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ConfigValue" Type="varchar" MaxLength="500" />
+          <Property Name="ConfigDataType" Type="varchar" MaxLength="50" />
+          <Property Name="ConfigDetail" Type="varchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -136,6 +200,18 @@
           <Property Name="UserType" Type="varchar" MaxLength="50" />
           <Property Name="Description" Type="varchar" MaxLength="100" />
         </EntityType>
+        <Function Name="Split" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="String" Type="nvarchar" Mode="In" />
+          <Parameter Name="Delimiter" Type="nchar" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="Id" Type="bigint" />
+                <Property Name="Data" Type="nvarchar" MaxLength="4000" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
         <Function Name="spPostBuilding_List" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BuildingTypeID" Type="int" Mode="In" />
           <Parameter Name="PriceID" Type="int" Mode="In" />
@@ -147,15 +223,20 @@
         <EntityContainer Name="FairyGroupModelStoreContainer">
           <EntitySet Name="Area" EntityType="Self.Area" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BuildingType" EntityType="Self.BuildingType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BuildingTypeDetail" EntityType="Self.BuildingTypeDetail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BuildingTypeGroupDetail" EntityType="Self.BuildingTypeGroupDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyProfile" EntityType="Self.CompanyProfile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="District" EntityType="Self.District" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LogMail" EntityType="Self.LogMail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PostBuilding" EntityType="Self.PostBuilding" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PostBuildingImg" EntityType="Self.PostBuildingImg" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PostType" EntityType="Self.PostType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PriceSelection" EntityType="Self.PriceSelection" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Priority" EntityType="Self.Priority" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Province" EntityType="Self.Province" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProvinceGroup" EntityType="Self.ProvinceGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubDistrict" EntityType="Self.SubDistrict" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SystemConfig" EntityType="Self.SystemConfig" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserType" EntityType="Self.UserType" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
@@ -207,6 +288,9 @@
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="PriorityID" Type="Int32" />
           <Property Name="UpdateDate" Type="DateTime" Precision="3" />
+          <Property Name="DescriptionEn" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PostTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PostTitleEn" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Province">
           <Key>
@@ -283,6 +367,15 @@
             <Parameter Name="KeySearch" Mode="In" Type="String" />
             <Parameter Name="MINDATE" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="PostBuildingImgs" EntityType="FairyGroupModel.PostBuildingImg" />
+          <FunctionImport Name="Split" IsComposable="true" ReturnType="Collection(FairyGroupModel.Split_Result)">
+            <Parameter Name="String" Mode="In" Type="String" />
+            <Parameter Name="Delimiter" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="BuildingTypeDetails" EntityType="FairyGroupModel.BuildingTypeDetail" />
+          <EntitySet Name="BuildingTypeGroupDetails" EntityType="FairyGroupModel.BuildingTypeGroupDetail" />
+          <EntitySet Name="SystemConfigs" EntityType="FairyGroupModel.SystemConfig" />
+          <EntitySet Name="LogMails" EntityType="FairyGroupModel.LogMail" />
         </EntityContainer>
         <EntityType Name="CompanyProfile">
           <Key>
@@ -299,6 +392,7 @@
           </Key>
           <Property Name="PostTypeID" Type="Int32" Nullable="false" />
           <Property Name="PostTypeName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PostTypeNameEn" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Priority">
           <Key>
@@ -321,7 +415,7 @@
           <Property Type="Int32" Name="PostBuildingID" Nullable="true" />
           <Property Type="Int32" Name="BuildingTypeID" Nullable="true" />
           <Property Type="Int32" Name="PostTypeID" Nullable="true" />
-          <Property Type="Decimal" Name="SalePrice" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="String" Name="SalePrice" Nullable="true" MaxLength="8000" />
           <Property Type="Int32" Name="ProvinceID" Nullable="true" />
           <Property Type="Int32" Name="DistrictID" Nullable="true" />
           <Property Type="Int32" Name="SubDistrictID" Nullable="true" />
@@ -338,7 +432,72 @@
           <Property Type="String" Name="SubDistrictName" Nullable="true" MaxLength="200" />
           <Property Type="Int32" Name="ZipCode" Nullable="true" />
           <Property Type="String" Name="UpdateStr" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="ImgName" Nullable="true" MaxLength="1500" />
         </ComplexType>
+        <EntityType Name="PostBuildingImg">
+          <Key>
+            <PropertyRef Name="PostBuildingImgID" />
+          </Key>
+          <Property Name="PostBuildingImgID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PostBuildingID" Type="Int32" Nullable="false" />
+          <Property Name="PathName" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="FileName" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="CreateDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <ComplexType Name="Split_Result">
+          <Property Type="Int64" Name="Id" Nullable="true" />
+          <Property Type="String" Name="Data" Nullable="true" MaxLength="4000" />
+        </ComplexType>
+        <EntityType Name="BuildingTypeDetail">
+          <Key>
+            <PropertyRef Name="BuildingTypeDetailID" />
+          </Key>
+          <Property Name="BuildingTypeDetailID" Type="Int32" Nullable="false" />
+          <Property Name="BuildingTypeID" Type="Int32" />
+          <Property Name="BuildingTypeGroupDetailID" Type="Int32" />
+          <Property Name="DetailName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="DetailNameEn" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="DetailDataType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="DetailControlType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="DetailControlGroup" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="isRequired" Type="Boolean" />
+          <Property Name="SortID" Type="Int32" />
+        </EntityType>
+        <EntityType Name="BuildingTypeGroupDetail">
+          <Key>
+            <PropertyRef Name="BuildingTypeGroupDetailID" />
+          </Key>
+          <Property Name="BuildingTypeGroupDetailID" Type="Int32" Nullable="false" />
+          <Property Name="BuildingTypeGroupDetailName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="BuildingTypeGroupDetailNameEn" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SortID" Type="Int32" />
+        </EntityType>
+        <EntityType Name="SystemConfig">
+          <Key>
+            <PropertyRef Name="ConfigCode" />
+          </Key>
+          <Property Name="ConfigCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ConfigValue" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="ConfigDataType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ConfigDetail" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LogMail">
+          <Key>
+            <PropertyRef Name="SendID" />
+          </Key>
+          <Property Name="SendID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SendFrom" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="SendTo" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="Fname" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Lname" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="uEmail" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="mSubject" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="mBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SendDate" Type="DateTime" Precision="3" />
+          <Property Name="CreateDate" Type="DateTime" Precision="3" />
+          <Property Name="LogMSG" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="SendStatus" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -377,6 +536,9 @@
           <EntitySetMapping Name="PostBuildings">
             <EntityTypeMapping TypeName="FairyGroupModel.PostBuilding">
               <MappingFragment StoreEntitySet="PostBuilding">
+                <ScalarProperty Name="PostTitleEn" ColumnName="PostTitleEn" />
+                <ScalarProperty Name="PostTitle" ColumnName="PostTitle" />
+                <ScalarProperty Name="DescriptionEn" ColumnName="DescriptionEn" />
                 <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
                 <ScalarProperty Name="PostBuildingID" ColumnName="PostBuildingID" />
                 <ScalarProperty Name="BuildingTypeID" ColumnName="BuildingTypeID" />
@@ -465,6 +627,7 @@
           <EntitySetMapping Name="PostTypes">
             <EntityTypeMapping TypeName="FairyGroupModel.PostType">
               <MappingFragment StoreEntitySet="PostType">
+                <ScalarProperty Name="PostTypeNameEn" ColumnName="PostTypeNameEn" />
                 <ScalarProperty Name="PostTypeName" ColumnName="PostTypeName" />
                 <ScalarProperty Name="PostTypeID" ColumnName="PostTypeID" />
               </MappingFragment>
@@ -512,9 +675,83 @@
                 <ScalarProperty Name="SubDistrictName" ColumnName="SubDistrictName" />
                 <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
                 <ScalarProperty Name="UpdateStr" ColumnName="UpdateStr" />
+                <ScalarProperty Name="ImgName" ColumnName="ImgName" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="PostBuildingImgs">
+            <EntityTypeMapping TypeName="FairyGroupModel.PostBuildingImg">
+              <MappingFragment StoreEntitySet="PostBuildingImg">
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="PathName" ColumnName="PathName" />
+                <ScalarProperty Name="PostBuildingID" ColumnName="PostBuildingID" />
+                <ScalarProperty Name="PostBuildingImgID" ColumnName="PostBuildingImgID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Split" FunctionName="FairyGroupModel.Store.Split">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FairyGroupModel.Split_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Data" ColumnName="Data" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="BuildingTypeDetails">
+            <EntityTypeMapping TypeName="FairyGroupModel.BuildingTypeDetail">
+              <MappingFragment StoreEntitySet="BuildingTypeDetail">
+                <ScalarProperty Name="SortID" ColumnName="SortID" />
+                <ScalarProperty Name="isRequired" ColumnName="isRequired" />
+                <ScalarProperty Name="DetailControlGroup" ColumnName="DetailControlGroup" />
+                <ScalarProperty Name="DetailControlType" ColumnName="DetailControlType" />
+                <ScalarProperty Name="DetailDataType" ColumnName="DetailDataType" />
+                <ScalarProperty Name="DetailNameEn" ColumnName="DetailNameEn" />
+                <ScalarProperty Name="DetailName" ColumnName="DetailName" />
+                <ScalarProperty Name="BuildingTypeGroupDetailID" ColumnName="BuildingTypeGroupDetailID" />
+                <ScalarProperty Name="BuildingTypeID" ColumnName="BuildingTypeID" />
+                <ScalarProperty Name="BuildingTypeDetailID" ColumnName="BuildingTypeDetailID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BuildingTypeGroupDetails">
+            <EntityTypeMapping TypeName="FairyGroupModel.BuildingTypeGroupDetail">
+              <MappingFragment StoreEntitySet="BuildingTypeGroupDetail">
+                <ScalarProperty Name="SortID" ColumnName="SortID" />
+                <ScalarProperty Name="BuildingTypeGroupDetailNameEn" ColumnName="BuildingTypeGroupDetailNameEn" />
+                <ScalarProperty Name="BuildingTypeGroupDetailName" ColumnName="BuildingTypeGroupDetailName" />
+                <ScalarProperty Name="BuildingTypeGroupDetailID" ColumnName="BuildingTypeGroupDetailID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SystemConfigs">
+            <EntityTypeMapping TypeName="FairyGroupModel.SystemConfig">
+              <MappingFragment StoreEntitySet="SystemConfig">
+                <ScalarProperty Name="ConfigDetail" ColumnName="ConfigDetail" />
+                <ScalarProperty Name="ConfigDataType" ColumnName="ConfigDataType" />
+                <ScalarProperty Name="ConfigValue" ColumnName="ConfigValue" />
+                <ScalarProperty Name="ConfigCode" ColumnName="ConfigCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LogMails">
+            <EntityTypeMapping TypeName="FairyGroupModel.LogMail">
+              <MappingFragment StoreEntitySet="LogMail">
+                <ScalarProperty Name="SendStatus" ColumnName="SendStatus" />
+                <ScalarProperty Name="LogMSG" ColumnName="LogMSG" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="SendDate" ColumnName="SendDate" />
+                <ScalarProperty Name="mBody" ColumnName="mBody" />
+                <ScalarProperty Name="mSubject" ColumnName="mSubject" />
+                <ScalarProperty Name="uEmail" ColumnName="uEmail" />
+                <ScalarProperty Name="Lname" ColumnName="Lname" />
+                <ScalarProperty Name="Fname" ColumnName="Fname" />
+                <ScalarProperty Name="SendTo" ColumnName="SendTo" />
+                <ScalarProperty Name="SendFrom" ColumnName="SendFrom" />
+                <ScalarProperty Name="SendID" ColumnName="SendID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
