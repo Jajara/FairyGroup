@@ -45,6 +45,14 @@ namespace FairyGroup.Controllers
 
             return View();
         }
+        public ActionResult PostBuilding(int owner)
+        {
+            ViewBag.Owner = owner;
+            return View();
+        }
+
+
+
         public JsonResult getAreaThailand()
         {
             try
@@ -59,6 +67,8 @@ namespace FairyGroup.Controllers
 
                     md.mdDistrict = (from d in db.Districts
                                      select d).ToList();
+                    md.mdSubDistrict = (from d in db.SubDistricts
+                                        select d).ToList();
                     return Json(md, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -94,6 +104,25 @@ namespace FairyGroup.Controllers
                 {
                     var md = (from d in db.Districts
                               where d.ProvinceID == ProvinceID
+                              select d).ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+        public JsonResult getSubDistrict(int DistrictID)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    var md = (from d in db.SubDistricts
+                              where d.DistrictID == DistrictID
                               select d).ToList();
                     return Json(md, JsonRequestBehavior.AllowGet);
                 }
@@ -296,5 +325,40 @@ namespace FairyGroup.Controllers
                 throw ex;
             }
         }
+
+        #region PostBuilding
+        public JsonResult getPostType()
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    var md = (from b in db.PostTypes
+                              select b).ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public JsonResult getPostBuildingDetail(int BuildingTypeID, int PostBuildingID)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    var md = db.spGetPostDetail(BuildingTypeID, PostBuildingID).ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion PostBuilding
     }
 }

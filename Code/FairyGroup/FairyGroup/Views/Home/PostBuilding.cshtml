@@ -1,0 +1,513 @@
+﻿
+@{
+    ViewBag.Title = "PostBuilding";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Boogaloo">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Economica:700,400italic">
+<style type="text/css">
+   
+    /* css กำหนดความกว้าง ความสูงของแผนที่ */
+    #map_canvas {
+        width: 100%;
+        height: 400px;
+        margin: auto;
+       
+    }
+</style>  
+
+<script type="text/javascript">
+    var Area;
+
+    //-----------------------------------------------Google Map------------------------------------//
+    var geocoder; // กำหนดตัวแปรสำหรับ เก็บ Geocoder Object ใช้แปลงชื่อสถานที่เป็นพิกัด
+    var map; // กำหนดตัวแปร map ไว้ด้านนอกฟังก์ชัน เพื่อให้สามารถเรียกใช้งาน จากส่วนอื่นได้
+    var my_Marker; // กำหนดตัวแปรสำหรับเก็บตัว marker
+    var GGM; // กำหนดตัวแปร GGM ไว้เก็บ google.maps Object จะได้เรียกใช้งานได้ง่ายขึ้น
+    function initialize() { // ฟังก์ชันแสดงแผนที่
+        GGM = new Object(google.maps); // เก็บตัวแปร google.maps Object ไว้ในตัวแปร GGM
+        geocoder = new GGM.Geocoder(); // เก็บตัวแปร google.maps.Geocoder Object
+        // กำหนดจุดเริ่มต้นของแผนที่
+        var my_Latlng = new GGM.LatLng(13.761728449950002, 100.6527900695800);
+        var my_mapTypeId = GGM.MapTypeId.ROADMAP; // กำหนดรูปแบบแผนที่ที่แสดง
+        // กำหนด DOM object ที่จะเอาแผนที่ไปแสดง ที่นี้คือ div id=map_canvas
+        var my_DivObj = $("#map_canvas")[0];
+        // กำหนด Option ของแผนที่
+        var myOptions = {
+            zoom: 13, // กำหนดขนาดการ zoom
+            center: my_Latlng, // กำหนดจุดกึ่งกลาง จากตัวแปร my_Latlng
+            mapTypeId: my_mapTypeId // กำหนดรูปแบบแผนที่ จากตัวแปร my_mapTypeId
+        };
+        map = new GGM.Map(my_DivObj, myOptions); // สร้างแผนที่และเก็บตัวแปรไว้ในชื่อ map
+
+        my_Marker = new GGM.Marker({ // สร้างตัว marker ไว้ในตัวแปร my_Marker
+            position: my_Latlng,  // กำหนดไว้ที่เดียวกับจุดกึ่งกลาง
+            map: map, // กำหนดว่า marker นี้ใช้กับแผนที่ชื่อ instance ว่า map
+            draggable: true, // กำหนดให้สามารถลากตัว marker นี้ได้
+            title: "คลิกลากเพื่อหาตำแหน่งจุดที่ต้องการ!" // แสดง title เมื่อเอาเมาส์มาอยู่เหนือ
+        });
+
+        // กำหนด event ให้กับตัว marker เมื่อสิ้นสุดการลากตัว marker ให้ทำงานอะไร
+        GGM.event.addListener(my_Marker, 'dragend', function () {
+            var my_Point = my_Marker.getPosition();  // หาตำแหน่งของตัว marker เมื่อกดลากแล้วปล่อย
+            map.panTo(my_Point); // ให้แผนที่แสดงไปที่ตัว marker
+            $("#lat_value").val(my_Point.lat());  // เอาค่า latitude ตัว marker แสดงใน textbox id=lat_value
+            $("#lon_value").val(my_Point.lng());  // เอาค่า longitude ตัว marker แสดงใน textbox id=lon_value
+            $("#zoom_value").val(map.getZoom());  // เอาขนาด zoom ของแผนที่แสดงใน textbox id=zoom_valu
+        });
+
+        // กำหนด event ให้กับตัวแผนที่ เมื่อมีการเปลี่ยนแปลงการ zoom
+        GGM.event.addListener(map, 'zoom_changed', function () {
+            $("#zoom_value").val(map.getZoom());   // เอาขนาด zoom ของแผนที่แสดงใน textbox id=zoom_value
+        });
+
+    }
+    function searchPlace() { // ฟังก์ชัน สำหรับคันหาสถานที่ ชื่อ searchPlace
+        var AddressSearch = $("#namePlace").val();// เอาค่าจาก textbox ที่กรอกมาไว้ในตัวแปร
+        if (geocoder) { // ตรวจสอบว่าถ้ามี Geocoder Object
+            geocoder.geocode({
+                address: AddressSearch // ให้ส่งชื่อสถานที่ไปค้นหา
+            }, function (results, status) { // ส่งกลับการค้นหาเป็นผลลัพธ์ และสถานะ
+                if (status == GGM.GeocoderStatus.OK) { // ตรวจสอบสถานะ ถ้าหากเจอ
+                    var my_Point = results[0].geometry.location; // เอาผลลัพธ์ของพิกัด มาเก็บไว้ที่ตัวแปร
+                    map.setCenter(my_Point); // กำหนดจุดกลางของแผนที่ไปที่ พิกัดผลลัพธ์
+                    my_Marker.setMap(map); // กำหนดตัว marker ให้ใช้กับแผนที่ชื่อ map
+                    my_Marker.setPosition(my_Point); // กำหนดตำแหน่งของตัว marker เท่ากับ พิกัดผลลัพธ์
+                    $("#lat_value").val(my_Point.lat());  // เอาค่า latitude พิกัดผลลัพธ์ แสดงใน textbox id=lat_value
+                    $("#lon_value").val(my_Point.lng());  // เอาค่า longitude พิกัดผลลัพธ์ แสดงใน textbox id=lon_value
+                    //$("#zoom_value").val(map.getZoom()); // เอาขนาด zoom ของแผนที่แสดงใน textbox id=zoom_valu
+                } else {
+                    // ค้นหาไม่พบแสดงข้อความแจ้ง
+                    alert("Geocode was not successful for the following reason: " + status);
+                    $("#namePlace").val("");// กำหนดค่า textbox id=namePlace ให้ว่างสำหรับค้นหาใหม่
+                }
+            });
+        }
+    }
+
+    $(function () {
+        // ส่วนของฟังก์ชันค้นหาชื่อสถานที่ในแผนที่
+        //var searchPlace = function () { // ฟังก์ชัน สำหรับคันหาสถานที่ ชื่อ searchPlace
+        //    debugger
+        //    var AddressSearch = $("#namePlace").val();// เอาค่าจาก textbox ที่กรอกมาไว้ในตัวแปร
+        //    if (geocoder) { // ตรวจสอบว่าถ้ามี Geocoder Object
+        //        geocoder.geocode({
+        //            address: AddressSearch // ให้ส่งชื่อสถานที่ไปค้นหา
+        //        }, function (results, status) { // ส่งกลับการค้นหาเป็นผลลัพธ์ และสถานะ
+        //            if (status == GGM.GeocoderStatus.OK) { // ตรวจสอบสถานะ ถ้าหากเจอ
+        //                var my_Point = results[0].geometry.location; // เอาผลลัพธ์ของพิกัด มาเก็บไว้ที่ตัวแปร
+        //                map.setCenter(my_Point); // กำหนดจุดกลางของแผนที่ไปที่ พิกัดผลลัพธ์
+        //                my_Marker.setMap(map); // กำหนดตัว marker ให้ใช้กับแผนที่ชื่อ map
+        //                my_Marker.setPosition(my_Point); // กำหนดตำแหน่งของตัว marker เท่ากับ พิกัดผลลัพธ์
+        //                $("#lat_value").val(my_Point.lat());  // เอาค่า latitude พิกัดผลลัพธ์ แสดงใน textbox id=lat_value
+        //                $("#lon_value").val(my_Point.lng());  // เอาค่า longitude พิกัดผลลัพธ์ แสดงใน textbox id=lon_value
+        //                //$("#zoom_value").val(map.getZoom()); // เอาขนาด zoom ของแผนที่แสดงใน textbox id=zoom_valu
+        //            } else {
+        //                // ค้นหาไม่พบแสดงข้อความแจ้ง
+        //                alert("Geocode was not successful for the following reason: " + status);
+        //                $("#namePlace").val("");// กำหนดค่า textbox id=namePlace ให้ว่างสำหรับค้นหาใหม่
+        //            }
+        //        });
+        //    }
+        //}
+        $("#SearchPlace").click(function () { // เมื่อคลิกที่ปุ่ม id=SearchPlace ให้ทำงานฟังก์ฃันค้นหาสถานที่
+            searchPlace();  // ฟังก์ฃันค้นหาสถานที่
+        });
+        $("#namePlace").keyup(function (event) { // เมื่อพิมพ์คำค้นหาในกล่องค้นหา
+            if (event.keyCode == 13) {  //  ตรวจสอบปุ่มถ้ากด ถ้าเป็นปุ่ม Enter ให้เรียกฟังก์ชันค้นหาสถานที่
+                searchPlace();      // ฟังก์ฃันค้นหาสถานที่
+            }
+        });
+
+    });
+    $(function () {
+        // โหลด สคริป google map api เมื่อเว็บโหลดเรียบร้อยแล้ว
+        // ค่าตัวแปร ที่ส่งไปในไฟล์ google map api
+        // v=3.2&sensor=false&language=th&callback=initialize
+        //  v เวอร์ชัน่ 3.2
+        //  sensor กำหนดให้สามารถแสดงตำแหน่งทำเปิดแผนที่อยู่ได้ เหมาะสำหรับมือถือ ปกติใช้ false
+        //  language ภาษา th ,en เป็นต้น
+        //  callback ให้เรียกใช้ฟังก์ชันแสดง แผนที่ initialize
+        $("<script/>", {
+            "type": "text/javascript",
+            src: "http://maps.google.com/maps/api/js?v=3.2&sensor=false&language=th&callback=initialize"
+        }).appendTo("body");
+    });
+    //-----------------------------------------------Google Map------------------------------------//
+
+
+    $(document).ready(function () {
+        //-----------------------Initial-----------------------//
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getPostType", "Home", new { area = string.Empty })",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                $("#cbPostType option").remove();
+                $("#cbPostType").append('<option value=0>--กรุณาเลือก--</option>');
+                for (var i = 0; i < data.length; i++) {
+                    $("#cbPostType").append('<option value=' + data[i].PostTypeID + '>' + data[i].PostTypeName + '</option>');
+                }
+            } //success
+        });
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getBuildingType", "Home", new { area = string.Empty })",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                $("#cbBuilding option").remove();
+
+                $("#cbBuilding").append('<option value=0>--กรุณาเลือก--</option>');
+                for (var i = 0; i < data.length; i++) {
+                    $("#cbBuilding").append('<option value=' + data[i].BuildingTypeID + '>' + data[i].BuildingTypeName + '</option>');
+                }
+            } //success
+        });
+        $("#Price").change(function () {
+
+            var n = parseInt($("#Price").val().replace(/\,/g, ''));
+            if (isNaN(n)) $("#Price").val(0);
+            else $("#Price").val(numberWithCommas(n));
+        });
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getAreaThailand", "Home", new { area = string.Empty })",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                Area = data;
+                $("#cbProvince option").remove();
+                $("#cbProvince optgroup").remove();
+                $("#cbProvince").append('<option value=0>--กรุณาเลือก--</option>');
+                for (var i = 0; i < data.mdProvinceGroup.length; i++) {
+                    $("#cbProvince").append('<optgroup style="" id="aG' + data.mdProvinceGroup[i].ProvinceGroupID + '" label="' + data.mdProvinceGroup[i].ProvinceGroupName + '"></optgroup>');
+                    for (var j = 0; j < data.mdProvince.length; j++) {
+                        if (data.mdProvince[j].ProvinceGroupID == data.mdProvinceGroup[i].ProvinceGroupID)
+                            $('#aG' + data.mdProvinceGroup[i].ProvinceGroupID).append('<option  value=' + data.mdProvince[j].ProvinceID + '>' + data.mdProvince[j].ProvinceName + '</option>');
+                    }
+                }
+            } //success
+        });
+        $("#cbProvince").change(function () {
+            getDistrict($("#cbProvince").val());
+            $("#namePlace").val('ประเทศไทย ' + $("#cbProvince option:selected").text());
+            searchPlace();
+        });
+        $("#cbDistrict").change(function () {
+            getSubDistrict($("#cbDistrict").val());
+
+            $("#namePlace").val('ประเทศไทย ' + $("#cbProvince option:selected").text() + ' ' + $("#cbDistrict option:selected").text());
+            searchPlace();
+        });
+        $("#cbSubDistrict").change(function () {
+            $("#namePlace").val('ประเทศไทย ' + $("#cbProvince option:selected").text() + ' ' + $("#cbDistrict option:selected").text() + ' ' + $("#cbSubDistrict option:selected").text());
+            searchPlace();
+        });
+        $("#cbBuilding").change(function () {
+            setPostBuildingDetail();
+        });
+        getDistrict(0);
+        getSubDistrict(0);
+    });
+    function getDistrict(id) {
+        var data = Area;
+        $("#cbDistrict option").remove();
+        $("#cbDistrict").append('<option value=0>--กรุณาเลือก--</option>');
+        if (data != null && data.mdDistrict != null) {
+            for (var i = 0; i < data.mdDistrict.length; i++) {
+                if (data.mdDistrict[i].ProvinceID == id)
+                    $("#cbDistrict").append('<option value=' + data.mdDistrict[i].DistrictID + '>' + data.mdDistrict[i].DistrictName + '</option>');
+            }
+        }
+    }
+    function getSubDistrict(id) {
+        var data = Area;
+        $("#cbSubDistrict option").remove();
+        $("#cbSubDistrict").append('<option value=0>--กรุณาเลือก--</option>');
+        if (data != null && data.mdSubDistrict != null) {
+            for (var i = 0; i < data.mdSubDistrict.length; i++) {
+                if (data.mdSubDistrict[i].DistrictID == id)
+                    $("#cbSubDistrict").append('<option value=' + data.mdSubDistrict[i].SubDistrictID + '>' + data.mdSubDistrict[i].SubDistrictName + '</option>');
+            }
+        }
+    }
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    function setPostBuildingDetail() {
+        debugger
+        if (!isNaN($("#cbBuilding").val()) && $("#cbBuilding").val() != null) {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getPostBuildingDetail", "Home", new { area = string.Empty })",
+                data: { BuildingTypeID: $("#cbBuilding").val(), PostBuildingID: 0 },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    //pnDetail
+                } //success BuildingTypeID, int PostBuildingID
+            });
+        }
+
+    }
+
+</script>
+
+<section class="content-header">
+    <h1>
+        ขั้นตอน-ลงประกาศ
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home", new { area = string.Empty })"><i class="fa fa-dashboard"></i> หน้าแรก</a></li>
+        <li><a href="@Url.Action("Post", "Home", new { area = string.Empty })"><i class="fa fa-clipboard"></i> ลงประกาศ</a></li>
+        <li class="active"> ขั้นตอน-ลงประกาศ</li>
+    </ol>
+</section>
+<section class="content">    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary color-palette-box" id="pnPostNoRegis">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-pencil-square-o"></i> ข้อมูลเบื้องต้น</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                      
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="box-body">
+                        <div class="row">
+                            <label for="cbPostType" class="col-sm-3 control-label text-right"> ประกาศประเภท</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <select class="form-control input-sm" id="cbPostType"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="cbBuilding" class="col-sm-3 control-label text-right"> ประเภท</label>
+
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <select class="form-control  input-sm" id="cbBuilding"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <hr>
+                        </div>
+                        <div class="row">
+                            <label for="PostTitle" class="col-sm-3 control-label text-right">* หัวข้อประกาศ</label>
+
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control  input-sm" id="PostTitle" placeholder="หัวข้อประกาศ">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="Description" class="col-sm-3 control-label text-right">รายละเอียดเกี่ยวกับประกาศ</label>
+
+                            <div class="col-sm-9">
+                                <textarea class="form-control" rows="3" id="Description" placeholder="รายละเอียดเกี่ยวกับประกาศ"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <hr>
+                        </div>
+                        <div class="row">
+                            <label for="Price" class="col-sm-3 control-label text-right">* ราคา</label>
+
+                            <div class="col-sm-5">
+                                <div class="input-group">
+                                    <input type="text" class="form-control text-right " id="Price" placeholder="ราคา">
+                                    <span class="input-group-addon">.00</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="cbProvince" class="col-sm-3 control-label text-right">* จังหวัด</label>
+
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <select class="form-control" id="cbProvince"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="cbDistrict" class="col-sm-3 control-label text-right">* อำเภอ/เขต</label>
+
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <select class="form-control" id="cbDistrict"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="cbSubDistrict" class="col-sm-3 control-label text-right">* ตำบล/แขวง</label>
+
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <select class="form-control" id="cbSubDistrict"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="cbSubDistrict" class="col-sm-3 control-label text-right"> ถนน</label>
+
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control  input-sm" id="RoadName" placeholder="ถนน">
+                               
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="cbSubDistrict" class="col-sm-3 control-label text-right"> ที่อยู่</label>
+
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control  input-sm" id="AddressNo" placeholder="ที่อยู่">
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+
+
+            <div class="box box-primary color-palette-box" id="pnPostNoRegis">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-map-marker"></i> แผนที่ google map</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="box-body">
+                        <div id="map_canvas"></div>
+                        <div id="showDD" style="margin:auto;padding-top:5px;width:550px;">
+                            <!--textbox กรอกชื่อสถานที่ และปุ่มสำหรับการค้นหา เอาไว้นอกแท็ก <form>-->
+                            Search Place
+                            <input name="namePlace" type="text" id="namePlace" size="40" />
+                            <input type="button" name="SearchPlace" id="SearchPlace" value="Search" />
+                            <hr />
+                            <!--  <form> เก็บข้อมูลสำหรับนำไปบันทึกลงฐานข้อมูล หรือนำไปใช้อื่นๆ-->
+                            <form id="form_get_detailMap" name="form_get_detailMap" method="post" action="">
+                                Latitude
+                                <input name="lat_value" type="text" id="lat_value" value="0" size="17" disabled />
+                                Longitude
+                                <input name="lon_value" type="text" id="lon_value" value="0" size="17" disabled />
+                                @*Zoom
+                                <input name="zoom_value" type="text" id="zoom_value" value="0" size="5" disabled />*@
+                                @*<input type="submit" name="button" id="button" value="บันทึก" />*@
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="box box-primary color-palette-box" id="pnPostNoRegis">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-comment"></i> รายละเอียด</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="box-body" id="pnDetail">
+
+
+
+                    </div>
+                </div>
+            </div>
+
+          
+
+            <div class="box box-primary color-palette-box" id="pnPostNoRegis">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-comment"></i> ยืนยันการลงประกาศ</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="box-body">
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+</section>
+@*<div id="wizard" style="overflow :auto">
+        <h4>ข้อมูลเบื้องต้น</h4>
+        <section>
+
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut nulla nunc. Maecenas arcu sem, hendrerit a tempor quis,
+                sagittis accumsan tellus. In hac habitasse platea dictumst. Donec a semper dui. Nunc eget quam libero. Nam at felis metus.
+                Nam tellus dolor, tristique ac tempus nec, iaculis quis nisi.
+            </p>
+        </section>
+        <h2>แผนที่ google map</h2>
+        <section>
+            <p>
+                Donec mi sapien, hendrerit nec egestas a, rutrum vitae dolor. Nullam venenatis diam ac ligula elementum pellentesque.
+                In lobortis sollicitudin felis non eleifend. Morbi tristique tellus est, sed tempor elit. Morbi varius, nulla quis condimentum
+                dictum, nisi elit condimentum magna, nec venenatis urna quam in nisi. Integer hendrerit sapien a diam adipiscing consectetur.
+                In euismod augue ullamcorper leo dignissim quis elementum arcu porta. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Vestibulum leo velit, blandit ac tempor nec, ultrices id diam. Donec metus lacus, rhoncus sagittis iaculis nec, malesuada a diam.
+                Donec non pulvinar urna. Aliquam id velit lacus.
+            </p>
+        </section>
+        <h2>รายละเอียด</h2>
+        <section>
+            <p>
+                Morbi ornare tellus at elit ultrices id dignissim lorem elementum. Sed eget nisl at justo condimentum dapibus. Fusce eros justo,
+                pellentesque non euismod ac, rutrum sed quam. Ut non mi tortor. Vestibulum eleifend varius ullamcorper. Aliquam erat volutpat.
+                Donec diam massa, porta vel dictum sit amet, iaculis ac massa. Sed elementum dui commodo lectus sollicitudin in auctor mauris
+                venenatis.
+            </p>
+        </section>
+        <h2>ยืนยันการลงประกาศ</h2>
+        <section>
+            *<p>
+                Quisque at sem turpis, id sagittis diam. Suspendisse malesuada eros posuere mauris vehicula vulputate. Aliquam sed sem tortor.
+                Quisque sed felis ut mauris feugiat iaculis nec ac lectus. Sed consequat vestibulum purus, imperdiet varius est pellentesque vitae.
+                Suspendisse consequat cursus eros, vitae tempus enim euismod non. Nullam ut commodo tortor.
+            </p>
+        </section>
+    </div>*@

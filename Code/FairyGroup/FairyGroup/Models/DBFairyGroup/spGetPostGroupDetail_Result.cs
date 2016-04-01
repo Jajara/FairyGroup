@@ -10,12 +10,11 @@
 namespace FairyGroup.Models.DBFairyGroup
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class BuildingTypeDetail
+    public partial class spGetPostGroupDetail_Result
     {
-        public int BuildingTypeID { get; set; }
-        public int BuildingDetailID { get; set; }
-        public Nullable<bool> isRequired { get; set; }
+        public int BuildingGroupDetailID { get; set; }
+        public string BuildingGroupDetailName { get; set; }
+        public Nullable<int> SortID { get; set; }
     }
 }

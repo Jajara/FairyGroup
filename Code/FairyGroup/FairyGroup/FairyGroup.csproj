@@ -170,13 +170,16 @@
     <Compile Include="Models\DBFairyGroup\Area.cs">
       <DependentUpon>FairyGroup.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DBFairyGroup\BuildingDetail.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\BuildingGroupDetail.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\DBFairyGroup\BuildingType.cs">
       <DependentUpon>FairyGroup.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DBFairyGroup\BuildingTypeDetail.cs">
-      <DependentUpon>FairyGroup.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\DBFairyGroup\BuildingTypeGroupDetail.cs">
       <DependentUpon>FairyGroup.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DBFairyGroup\CompanyProfile.cs">
@@ -206,6 +209,9 @@
     <Compile Include="Models\DBFairyGroup\PostBuilding.cs">
       <DependentUpon>FairyGroup.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DBFairyGroup\PostBuildingDetail.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\DBFairyGroup\PostBuildingImg.cs">
       <DependentUpon>FairyGroup.tt</DependentUpon>
     </Compile>
@@ -222,6 +228,12 @@
       <DependentUpon>FairyGroup.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DBFairyGroup\ProvinceGroup.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\spGetPostDetail_Result.cs">
+      <DependentUpon>FairyGroup.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DBFairyGroup\spGetPostGroupDetail_Result.cs">
       <DependentUpon>FairyGroup.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DBFairyGroup\Split_Result.cs">
@@ -243,6 +255,7 @@
       <DependentUpon>FairyGroup.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Home\ThaiAreaModel.cs" />
+    <Compile Include="Models\PostBuildingModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -1229,6 +1242,16 @@
     <Content Include="Scripts\TemplateLTE\plugins\timepicker\bootstrap-timepicker.js" />
     <Content Include="Scripts\TemplateLTE\plugins\timepicker\bootstrap-timepicker.min.css" />
     <Content Include="Scripts\TemplateLTE\plugins\timepicker\bootstrap-timepicker.min.js" />
+    <Content Include="Scripts\WizardLib\css\jquery.steps.css" />
+    <Content Include="Scripts\WizardLib\css\main.css" />
+    <Content Include="Scripts\WizardLib\css\normalize.css" />
+    <Content Include="Scripts\WizardLib\jquery.steps.js" />
+    <Content Include="Scripts\WizardLib\jquery.steps.min.js" />
+    <Content Include="Scripts\WizardLib\lib\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\WizardLib\lib\jquery-1.11.1.min.js" />
+    <Content Include="Scripts\WizardLib\lib\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\WizardLib\lib\jquery.cookie-1.3.1.js" />
+    <Content Include="Scripts\WizardLib\lib\modernizr-2.6.2.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -1250,9 +1273,11 @@
     <Content Include="Views\Home\Profile.cshtml" />
     <Content Include="Views\Home\Regist.cshtml" />
     <Content Include="Views\Shared\_LayoutSys.cshtml" />
+    <Content Include="Views\Home\PostBuilding.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\BackEnd\" />
     <Folder Include="Views\SysConfig\" />
   </ItemGroup>
   <ItemGroup>

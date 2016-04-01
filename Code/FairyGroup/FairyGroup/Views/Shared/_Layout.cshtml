@@ -113,7 +113,11 @@
                     $("#lbUserName").append('<p>' + auname + '</p>');
 
                     $("#spUser span").remove();
-                    $("#spUser").append('<span class="hidden-xs">' + auname + '</span>');                    
+                    $("#spUser").append('<span class="hidden-xs">' + auname + '</span>');
+
+                    $("#fairygroup").data("auid", $.cookie('auid'));
+                    $("#fairygroup").data("auname", $.cookie('auname'));
+                    $("#fairygroup").data("autype", $.cookie('autype'));
                 }
             }
             catch (err) {
@@ -147,7 +151,7 @@
 
 </head>
 <body class="hold-transition skin-black-light layout-top-nav" >
-    <div class="wrapper">
+    <div class="wrapper" id="fairygroup">
         <header class="main-header">
             <nav class="navbar navbar-static-top">
                 <div class="container">

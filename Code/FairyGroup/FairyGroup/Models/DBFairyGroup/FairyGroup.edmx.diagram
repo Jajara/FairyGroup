@@ -4,25 +4,27 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="daa1983e57194c6187dd6a319b833c49" Name="Diagram1">
-        <EntityTypeShape EntityType="FairyGroupModel.Area" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FairyGroupModel.BuildingType" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FairyGroupModel.District" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FairyGroupModel.PostBuilding" Width="1.5" PointX="2.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FairyGroupModel.Province" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FairyGroupModel.ProvinceGroup" Width="1.5" PointX="4.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FairyGroupModel.SubDistrict" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FairyGroupModel.User" Width="1.5" PointX="6.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FairyGroupModel.UserType" Width="1.5" PointX="8.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FairyGroupModel.CompanyProfile" Width="1.5" PointX="0.75" PointY="8.75" />
-        <EntityTypeShape EntityType="FairyGroupModel.PostType" Width="1.5" PointX="2.75" PointY="8.75" />
-        <EntityTypeShape EntityType="FairyGroupModel.Priority" Width="1.5" PointX="4.75" PointY="8.75" />
-        <EntityTypeShape EntityType="FairyGroupModel.PriceSelection" Width="1.5" PointX="7.375" PointY="8.75" />
-        <EntityTypeShape EntityType="FairyGroupModel.PostBuildingImg" Width="1.5" PointX="9.375" PointY="3.75" />
-        <EntityTypeShape EntityType="FairyGroupModel.BuildingTypeDetail" Width="1.5" PointX="9.375" PointY="6.75" />
-        <EntityTypeShape EntityType="FairyGroupModel.BuildingTypeGroupDetail" Width="1.5" PointX="9.375" PointY="10.75" />
-        <EntityTypeShape EntityType="FairyGroupModel.SystemConfig" Width="1.5" PointX="11.375" PointY="0.75" />
-        <EntityTypeShape EntityType="FairyGroupModel.LogMail" Width="1.5" PointX="0.75" PointY="11.75" />
+      <Diagram DiagramId="9fbec3de270d4019b7cd5cc94f8cee5e" Name="Diagram1" >
+        <EntityTypeShape EntityType="FairyGroupModel.Area" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.BuildingDetail" Width="1.5" PointX="2.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.BuildingGroupDetail" Width="1.5" PointX="4.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.BuildingType" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.BuildingTypeDetail" Width="1.5" PointX="2.75" PointY="4.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.CompanyProfile" Width="1.5" PointX="4.75" PointY="3.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.District" Width="1.5" PointX="6.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.LogMail" Width="1.5" PointX="6.75" PointY="3.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.PostBuilding" Width="1.5" PointX="0.75" PointY="7.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.PostBuildingDetail" Width="1.5" PointX="2.75" PointY="7.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.PostBuildingImg" Width="1.5" PointX="8.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.PostType" Width="1.5" PointX="8.75" PointY="3.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.PriceSelection" Width="1.5" PointX="4.75" PointY="8.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.Priority" Width="1.5" PointX="8.75" PointY="6.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.Province" Width="1.5" PointX="6.75" PointY="9.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.ProvinceGroup" Width="1.5" PointX="8.75" PointY="9.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.SubDistrict" Width="1.5" PointX="10.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.SystemConfig" Width="1.5" PointX="10.75" PointY="3.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.User" Width="1.5" PointX="10.75" PointY="6.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.UserType" Width="1.5" PointX="2.75" PointY="11.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

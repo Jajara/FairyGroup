@@ -12,10 +12,16 @@ namespace FairyGroup.Models.DBFairyGroup
     using System;
     using System.Collections.Generic;
     
-    public partial class BuildingTypeDetail
+    public partial class BuildingDetail
     {
-        public int BuildingTypeID { get; set; }
         public int BuildingDetailID { get; set; }
+        public Nullable<int> BuildingGroupDetailID { get; set; }
+        public string DetailName { get; set; }
+        public string DetailNameEn { get; set; }
+        public string DetailDataType { get; set; }
+        public string DetailControlType { get; set; }
+        public string DetailControlGroup { get; set; }
         public Nullable<bool> isRequired { get; set; }
+        public Nullable<int> SortID { get; set; }
     }
 }

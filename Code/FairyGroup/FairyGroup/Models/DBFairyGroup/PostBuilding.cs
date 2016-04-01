@@ -31,5 +31,10 @@ namespace FairyGroup.Models.DBFairyGroup
         public string DescriptionEn { get; set; }
         public string PostTitle { get; set; }
         public string PostTitleEn { get; set; }
+        public Nullable<bool> isOwner { get; set; }
+        public string AddressNo { get; set; }
+        public string RoadName { get; set; }
+        public string LatitudeMap { get; set; }
+        public string LongitudeMap { get; set; }
     }
 }

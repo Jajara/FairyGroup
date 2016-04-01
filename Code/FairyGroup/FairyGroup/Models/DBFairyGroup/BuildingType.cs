@@ -17,5 +17,8 @@ namespace FairyGroup.Models.DBFairyGroup
         public int BuildingTypeID { get; set; }
         public string BuildingTypeName { get; set; }
         public string BuildingTypeIcon { get; set; }
+        public Nullable<bool> isSale { get; set; }
+        public Nullable<bool> isRent { get; set; }
+        public Nullable<bool> isOptionToBuy { get; set; }
     }
 }

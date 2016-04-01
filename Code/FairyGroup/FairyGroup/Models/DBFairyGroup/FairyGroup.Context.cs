@@ -28,23 +28,70 @@ namespace FairyGroup.Models.DBFairyGroup
         }
     
         public virtual DbSet<Area> Areas { get; set; }
+        public virtual DbSet<BuildingDetail> BuildingDetails { get; set; }
+        public virtual DbSet<BuildingGroupDetail> BuildingGroupDetails { get; set; }
         public virtual DbSet<BuildingType> BuildingTypes { get; set; }
+        public virtual DbSet<BuildingTypeDetail> BuildingTypeDetails { get; set; }
+        public virtual DbSet<CompanyProfile> CompanyProfiles { get; set; }
         public virtual DbSet<District> Districts { get; set; }
+        public virtual DbSet<LogMail> LogMails { get; set; }
         public virtual DbSet<PostBuilding> PostBuildings { get; set; }
+        public virtual DbSet<PostBuildingDetail> PostBuildingDetails { get; set; }
+        public virtual DbSet<PostBuildingImg> PostBuildingImgs { get; set; }
+        public virtual DbSet<PostType> PostTypes { get; set; }
+        public virtual DbSet<PriceSelection> PriceSelections { get; set; }
+        public virtual DbSet<Priority> Priorities { get; set; }
         public virtual DbSet<Province> Provinces { get; set; }
         public virtual DbSet<ProvinceGroup> ProvinceGroups { get; set; }
         public virtual DbSet<SubDistrict> SubDistricts { get; set; }
+        public virtual DbSet<SystemConfig> SystemConfigs { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserType> UserTypes { get; set; }
-        public virtual DbSet<CompanyProfile> CompanyProfiles { get; set; }
-        public virtual DbSet<PostType> PostTypes { get; set; }
-        public virtual DbSet<Priority> Priorities { get; set; }
-        public virtual DbSet<PriceSelection> PriceSelections { get; set; }
-        public virtual DbSet<PostBuildingImg> PostBuildingImgs { get; set; }
-        public virtual DbSet<BuildingTypeDetail> BuildingTypeDetails { get; set; }
-        public virtual DbSet<BuildingTypeGroupDetail> BuildingTypeGroupDetails { get; set; }
-        public virtual DbSet<SystemConfig> SystemConfigs { get; set; }
-        public virtual DbSet<LogMail> LogMails { get; set; }
+    
+        public virtual int BackUpdateDB()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("BackUpdateDB");
+        }
+    
+        public virtual ObjectResult<spGetPostDetail_Result> spGetPostDetail(Nullable<int> buildingTypeID, Nullable<int> postBuildingID)
+        {
+            var buildingTypeIDParameter = buildingTypeID.HasValue ?
+                new ObjectParameter("BuildingTypeID", buildingTypeID) :
+                new ObjectParameter("BuildingTypeID", typeof(int));
+    
+            var postBuildingIDParameter = postBuildingID.HasValue ?
+                new ObjectParameter("PostBuildingID", postBuildingID) :
+                new ObjectParameter("PostBuildingID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spGetPostDetail_Result>("spGetPostDetail", buildingTypeIDParameter, postBuildingIDParameter);
+        }
+    
+        public virtual ObjectResult<spGetPostGroupDetail_Result> spGetPostGroupDetail(Nullable<int> buildingTypeID, Nullable<int> postBuildingID)
+        {
+            var buildingTypeIDParameter = buildingTypeID.HasValue ?
+                new ObjectParameter("BuildingTypeID", buildingTypeID) :
+                new ObjectParameter("BuildingTypeID", typeof(int));
+    
+            var postBuildingIDParameter = postBuildingID.HasValue ?
+                new ObjectParameter("PostBuildingID", postBuildingID) :
+                new ObjectParameter("PostBuildingID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spGetPostGroupDetail_Result>("spGetPostGroupDetail", buildingTypeIDParameter, postBuildingIDParameter);
+        }
+    
+        [DbFunction("FairyGroupEntities", "Split")]
+        public virtual IQueryable<Split_Result> Split(string @string, string delimiter)
+        {
+            var stringParameter = @string != null ?
+                new ObjectParameter("String", @string) :
+                new ObjectParameter("String", typeof(string));
+    
+            var delimiterParameter = delimiter != null ?
+                new ObjectParameter("Delimiter", delimiter) :
+                new ObjectParameter("Delimiter", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<Split_Result>("[FairyGroupEntities].[Split](@String, @Delimiter)", stringParameter, delimiterParameter);
+        }
     
         public virtual ObjectResult<spPostBuilding_List_Result> spPostBuilding_List(Nullable<int> buildingTypeID, Nullable<int> priceID, Nullable<int> provinceID, Nullable<int> districtID, string keySearch, string mINDATE)
         {
@@ -73,20 +120,6 @@ namespace FairyGroup.Models.DBFairyGroup
                 new ObjectParameter("MINDATE", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spPostBuilding_List_Result>("spPostBuilding_List", buildingTypeIDParameter, priceIDParameter, provinceIDParameter, districtIDParameter, keySearchParameter, mINDATEParameter);
-        }
-    
-        [DbFunction("FairyGroupEntities", "Split")]
-        public virtual IQueryable<Split_Result> Split(string @string, string delimiter)
-        {
-            var stringParameter = @string != null ?
-                new ObjectParameter("String", @string) :
-                new ObjectParameter("String", typeof(string));
-    
-            var delimiterParameter = delimiter != null ?
-                new ObjectParameter("Delimiter", delimiter) :
-                new ObjectParameter("Delimiter", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<Split_Result>("[FairyGroupEntities].[Split](@String, @Delimiter)", stringParameter, delimiterParameter);
         }
     }
 }
