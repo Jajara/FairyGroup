@@ -3,6 +3,38 @@
     ViewBag.Title = "Regist";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@*<style>
+    .color-palette {
+        height: 35px;
+        line-height: 35px;
+        text-align: center;
+    }
+
+    .color-palette-set {
+        margin-bottom: 15px;
+    }
+
+    .color-palette span {
+        display: none;
+        font-size: 12px;
+    }
+
+    .color-palette:hover span {
+        display: block;
+    }
+
+    .color-palette-box h4 {
+        position: absolute;
+        top: 100%;
+        left: 25px;
+        margin-top: -40px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 12px;
+        display: block;
+        z-index: 7;
+    }
+</style>*@
+
 <section class="content-header">
     <h1>
         สมัครสมาชิก
@@ -14,34 +46,266 @@
     </ol>
 </section>
 <section class="content">
-    <div class="row">
+    
         <div class="col-md-9">
+
             <div class="box box-primary color-palette-box">
                 <div class="box-header with-border">
                     <h3 class="box-title"><i class="fa fa-user-plus"></i> สมัครสมาชิก</h3>
                 </div>
-                <div class="box-body">
-                    <form role="form">
-                        <div class="box-body">
-                            <div class="form-group">
-                                <label for="exampleInputEmail1">Email address</label>
-                                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-                            </div>
-                            <div class="form-group">
-                                <label for="exampleInputPassword1">Password</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                            </div>
-                            <div class="form-group">
-                                <label for="exampleInputPassword1">Confirm Password</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Confirm  Password">
-                            </div>
-                        </div>
-                        <!-- /.box-body -->
+                <div class="panel-body">
 
-                        <div class="box-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                    <div class="box-body" id="pnRegis">
+                        <div class="row">
+                            <div class="col-md-8 has-error" id="pnEmail">
+                                <label for="tbEmail">Email address *</label>
+                                <div class="form-group">
+                                    <input type="email" class="form-control" id="tbEmail" placeholder="Email address">
+                                    <span class="help-block">กรุณากรอก Email address Format abc@zyx.com</span>
+                                </div>
+                                <script>
+                                    $("#tbEmail").focusout(function () {
+                                        if ($("#tbEmail").val() == "" || !isValidEmailAddress($("#tbEmail").val())) {
+                                            $("#pnEmail").addClass("has-error");
+                                            $("#pnEmail .help-block").show();
+                                        }
+                                        else {
+                                            $("#pnEmail").removeClass("has-error");
+                                            $("#pnEmail .help-block").hide();
+                                        }
+                                    });
+                                </script>
+                            </div>
                         </div>
-                    </form>
+                        <div class="row">
+                            <div class="col-md-8 has-error" id="pnPassword">
+                                <label for="tbPassword">Password *</label>
+                                <div class="form-group">
+                                    <input type="password" class="form-control" id="tbPassword" placeholder="Password">
+                                    <span class="help-block">กรุณากรอก Password และความยาวไม่น้อยกว่า 6 ตัวอักษร</span>
+                                </div>
+                                <script>
+                                    $("#tbPassword").focusout(function () {
+                                        if ($("#tbPassword").val() == "" || $("#tbPassword").val().length < 6) {
+                                            $("#pnPassword").addClass("has-error");
+                                            $("#pnPassword .help-block").show();
+                                        }
+                                        else {
+                                            $("#pnPassword").removeClass("has-error");
+                                            $("#pnPassword .help-block").hide();
+                                        }
+                                        if ($("#tbPassword").val() == $("#tbPasswordConf").val()) {
+                                            $("#pnPasswordConf").removeClass("has-error");
+                                            $("#pnPasswordConf .help-block").hide();
+                                        }
+                                        else {
+                                            $("#pnPasswordConf").addClass("has-error");
+                                            $("#pnPasswordConf .help-block").show();
+                                        }
+
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8 " id="pnPasswordConf">
+                                <label for="tbPasswordConf">Confirm Password *</label>
+                                <div class="form-group">
+                                    <input type="password" class="form-control" id="tbPasswordConf" placeholder="Confirm  Password">
+                                    <span class="help-block">ข้อมูลที่กรอกไม่ตรงกับ Password</span>
+                                </div>
+                                <script>
+                                    $("#pnPasswordConf .help-block").hide();
+                                    $("#tbPasswordConf").focusout(function () {
+                                        if ($("#tbPassword").val() == $("#tbPasswordConf").val()) {
+                                            $("#pnPasswordConf").removeClass("has-error");
+                                            $("#pnPasswordConf .help-block").hide();
+                                        }
+                                        else {
+                                            $("#pnPasswordConf").addClass("has-error");
+                                            $("#pnPasswordConf .help-block").show();
+                                        }
+                                    });
+                                </script>
+
+                            </div>
+                        </div>
+                        <div class="row has-error" id="pnName">
+                            <div class="col-md-12 "><label for="exampleInputEmail1">ชื่อ-นามสกุล (ภาษาไทย) *</label></div>
+                            <div class="form-group">
+                                <div class="col-md-6 "><input type="text" class="form-control " id="tbName" placeholder="ชื่อ"></div>
+                                <div class="col-md-6 "><input type="text" class="form-control" id="tbLname" placeholder="นามสกุล"></div>
+                            </div>
+                            <div class="col-md-12 "><span class="help-block">กรุณากรอก ชื่อ-นามสกุล</span></div>
+                            <script>
+                                $("#tbName").focusout(function () {
+                                    if ($("#tbName").val() == "" || $("#tbName").val().length < 2 || $("#tbLname").val() == "" || $("#tbLname").val().length < 2) {
+                                        $("#pnName").addClass("has-error");
+                                        $("#pnName .help-block").show();
+                                    }
+                                    else {
+                                        $("#pnName").removeClass("has-error");
+                                        $("#pnName .help-block").hide();
+                                    }
+                                });
+                                $("#tbLname").focusout(function () {
+                                    if ($("#tbName").val() == "" || $("#tbName").val().length < 2 || $("#tbLname").val() == "" || $("#tbLname").val().length < 2) {
+                                        $("#pnName").addClass("has-error");
+                                        $("#pnName .help-block").show();
+                                    }
+                                    else {
+                                        $("#pnName").removeClass("has-error");
+                                        $("#pnName .help-block").hide();
+                                    }
+                                });
+                            </script>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 "><label for="exampleInputEmail1">ชื่อ-นามสกุล (ภาษาอังกฤษ)</label></div>
+                            <div class="form-group">
+                                <div class="col-md-6 "><input type="text" class="form-control " id="tbNameEn" placeholder="ชื่อ"></div>
+                                <div class="col-md-6 "><input type="text" class="form-control" id=" tbLnameEn" placeholder="นามสกุล"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 ">
+                                <label for="exampleInputEmail1">ชื่อเล่น</label>
+                                <div class="form-group">
+                                    <input type="text" class="form-control " id="tbNickName" placeholder="ชื่อเล่น">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 has-error" id="pnSex">
+                                <label for="exampleInputEmail1">เพศ *</label>
+                                <div class="form-group">
+                                    <select name="sex" id="cbSex" class="form-control">
+                                        <option value="">--กรุณาเลือก--</option>
+                                        <option value="male">ชาย</option>
+                                        <option value="female">หญิง</option>
+                                    </select>
+                                </div>
+                                <span class="help-block">กรุณาระบุเพศ</span>
+                                <script>
+                                    $("#cbSex").focusout(function () {
+                                        if ($("#cbSex").val() == ""  {
+                                            $("#pnSex").addClass("has-error");
+                                            $("#pnSex .help-block").show();
+                                        }
+                                        else {
+                                            $("#pnSex").removeClass("has-error");
+                                            $("#pnSex .help-block").hide();
+                                        }                                        
+                                    });
+                                </script>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 ">
+                                <label for="exampleInputEmail1">เบอร์โทรศัพท์</label>
+                                <div class="form-group">
+                                    <div class="input-group col-sm-6">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-phone"></i>
+                                        </div>
+                                        <input type="text" class="form-control" id="tbMobile" data-inputmask="&quot;mask&quot;: &quot;(999) 999-9999&quot;" data-mask="">
+                                    </div>
+                                    <div class="input-group col-sm-6">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-phone"></i>
+                                        </div>
+                                        <input type="text" class="form-control" id="tbPhone" data-inputmask="'mask': ['999-999-9999 [x99999]', '+099 99 99 9999[9]-9999']" data-mask="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="box box-solid color-palette-box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-user-plus"></i> ข้อกำหนด</h3>
+                </div>
+                <div class="box-body"style="padding:0 25px 0 25px">
+                    <div id="editable" contenteditable="false">
+                        <p>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;การลงประกาศสินค้าหรือโฆษณาหรือบริการต่างๆใน <a href="http://www.fairygroup.co.th">www.fairygroup.co.th</a> ผู้ลงประกาศจะต้องใส่ข้อมูลให้ถูกต้องตามความเป็นจริง และสามารถตรวจสอบข้อมูลนั้นๆได้ ถ้าเนื้อหาในประกาศของคุณทำให้เสื่อมเสียใดๆ คุณจะต้องรับผิดชอบต่อเจตนานั้น ดังนั้นคุณควรที่จะปฏิบัติตามกฎและเงื่อนไขต่างๆ ในการลงประกาศของคุณ ในเว็บไซต์ <a href="http://www.fairygroup.co.th">www.fairygroup.co.th</a> ดังนี้</p>
+                        <p><small>&nbsp;&nbsp;&nbsp; &nbsp;1.&nbsp;ผู้ที่ต้องการสมัครสมาชิก จะต้องกรอกข้อมูลที่เป็นจริงให้ครบทุกข้อ หากทีมงาน www.fairygroup.co.th ตรวจสอบพบว่า ท่านให้ข้อมูลเท็จ ทีมงานมีสิทธิ์ ไม่ให้สิทธิ์การเป็นสมาชิกได้หรือยกเลิกการเป็นสมาชิกได้</small></p>
+                        <p><small>&nbsp;&nbsp;&nbsp; &nbsp;2.&nbsp;ผู้ใดแอบอ้าง หรือกระทำการใดๆ อันเป็นการละเมิดสิทธิ์ส่วนบุคคล โดยใช้ข้อมูลของผู้อื่นมาแอบอ้างสมัครสมาชิก เพื่อให้ได้สิทธิ์การสมาชิก ถือเป็นความผิด ต้องรับโทษตามที่กฎหมายกำหนดไว้</small></p>
+                        <p><small>&nbsp;&nbsp;&nbsp; &nbsp;3.&nbsp;ห้ามลงประกาศสินค้าหรือบริการ ที่ผิดกฎหมายใดๆ หมิ่นเบื้องสูง ขัดศีลธรรม ของละเมิดลิขสิทธิ์ อาวุธปืน ยาเสพติดต่างๆ</small></p>
+                        <p><small>&nbsp;&nbsp;&nbsp; &nbsp;4.&nbsp;ห้ามลงประกาศสินค้าหรือบริการ ประเภทสื่อลามกอนาจาร ทั้งเนื้อหาที่เป็นรูปภาพ ข้อความต่างๆ</small></p>
+                        <p><small>&nbsp;&nbsp;&nbsp; &nbsp;5.&nbsp;ห้ามลงประกาศสินค้าหรือบริการ ที่ลงผิดหมวดหมู่ หรือลงประกาศซ้ำๆกันมากๆ หรือติดต่อกันบ่อยๆเกินไป</small></p>
+                        <p><small>&nbsp;&nbsp;&nbsp; &nbsp;6.&nbsp;ห้ามลงประกาศสินค้าหรือบริการ ที่ไม่มีชื่อเจ้าของ ที่อยู่ เบอร์โทรศัพท์ อีเมล์ ติดต่อกลับ ซึ่งแสดงถึงความไม่น่าเชื่อถือ</small></p>
+                        <p><small>&nbsp;&nbsp;&nbsp; &nbsp;7.&nbsp;ห้ามลงประกาศสินค้าหรือบริการ โดยมีเจตนากลั่นแกล้งผู้อื่น หรือทำให้ผู้อื่นได้รับความเสียหาย หรืออับอาย</small></p>
+                        <p><small>&nbsp;&nbsp;&nbsp; &nbsp;8.&nbsp;ห้ามลงประกาศสินค้าหรือบริการ ที่มีถ้อยคำที่ไม่สุภาพ หยาบคาย ไม่ชัดเจน ลบลู่ อันทำให้เกิดความเสียหาย</small></p>
+                        <p>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;หาก ทางทีมงาน<a href="http://www.fairygroup.co.th"> www.fairygroup.co.th</a> ทำการตรวจสอบแล้วว่า การลงประกาศนั้นไม่เป็นไปตามเงื่อนไขดังกล่าว ทางทีมงาน จะขอสงวนลิขสิทธิ์ในการแก้ไข หรือลบข้อมูลประกาศนั้นๆ หรืออาจจะลบสมาชิกนั้นๆออก โดยไม่ต้องแจ้งให้ทราบล่วงหน้า</p>
+                    </div>
+                    @*<div class="col-md-12">
+                        <hr>
+                    </div>
+                    <div class="row">
+                       
+                    </div>*@
+                </div>
+                <div class="box-footer">
+
+                    <script>
+    $(document).ready(function() {
+        //set initial state.
+
+        $('#chkConfirm').change(function() {
+            if ($('#chkConfirm').is(':checked')) {
+                $('#btRegis').removeAttr('disabled');
+            }else {
+                $('#btRegis').attr('disabled','disabled');
+            }
+        });
+    });
+
+    function Register() {
+        var myObj = {
+            UserID: 0
+            , UserName:$("#tbEmail").val()
+            , Password: $("#tbPassword").val()
+            , FirstNameTH: $("#tbName").val()
+            , LastNameTH: $("#tbLname").val()
+            , FirstNameEN: $("#tbNameEn").val()
+            , LastNameEN: $("#tbLnameEn").val()
+            , NickName: $("#tbNickName").val()
+            , Sex: $("#cbSex").val()
+            , UserTypeID: 5
+            , EmailAccount: $("#tbEmail").val()
+            , Mobile: $("#tbMobile").val()
+            , Phone: $("#tbPhone").val()
+        };
+
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("SaveUser", "Home", new { area = string.Empty })",
+            data: JSON.stringify(myObj),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                window.location.href = "@Url.Action("Index", "Home", new { area = string.Empty })";
+            } //success
+        });
+    }
+                    </script>
+                    
+                    <button type="button" class="pull-right btn btn-success" id="btRegis" onclick="Register();" disabled>
+                        บันทึก <i class="fa  fa-save"></i>
+                    </button>
+                    <div class="col-sm-offset-2 pull-right ">
+                        <div class="checkbox" style="padding-right:20px">
+                            <label>
+                                <input type="checkbox" id="chkConfirm"> ยืนยันการสมัคร
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -66,6 +330,6 @@
                 </div><!-- /.box-body -->
             </div>
         </div>
-    </div>
+    
 </section>
 

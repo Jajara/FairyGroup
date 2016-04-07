@@ -23,5 +23,8 @@ namespace FairyGroup.Models.DBFairyGroup
         public string DetailControlGroup { get; set; }
         public Nullable<bool> isRequired { get; set; }
         public Nullable<int> SortID { get; set; }
+        public string Placeholder { get; set; }
+        public Nullable<int> ColWidth { get; set; }
+        public string UnitName { get; set; }
     }
 }

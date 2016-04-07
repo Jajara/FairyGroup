@@ -7,6 +7,7 @@
 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif">
 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Boogaloo">
 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Economica:700,400italic">
+
 <style type="text/css">
    
     /* css กำหนดความกว้าง ความสูงของแผนที่ */
@@ -14,12 +15,11 @@
         width: 100%;
         height: 400px;
         margin: auto;
-       
     }
 </style>  
 
 <script type="text/javascript">
-    var Area;
+    var DataInit;
 
     //-----------------------------------------------Google Map------------------------------------//
     var geocoder; // กำหนดตัวแปรสำหรับ เก็บ Geocoder Object ใช้แปลงชื่อสถานที่เป็นพิกัด
@@ -137,52 +137,61 @@
     });
     //-----------------------------------------------Google Map------------------------------------//
 
-
+    var postID = @ViewBag.PostBuildingID;
+    var postBuildingDetail;
     $(document).ready(function () {
         //-----------------------Initial-----------------------//
+        if ('@ViewBag.Owner' == '0')
+        {
+            window.location.href = "@Url.Action("Post", "Home", new { area = string.Empty })";
+        }
+        $.cookie.defaults = { path: '/' };
+        var auid = $.cookie('auid');        
+        if (auid == null) {
+            window.location.href = "@Url.Action("Post", "Home", new { area = string.Empty })";
+        }
+        /////TODO
+        $("#pnPostHeade").show();
+        //$("#pnPostMap").hide();
+        $("#pnPostDetail").hide();
+        $("#pnPostImage").hide();
+        $("#pnPostCommit").hide();
         $.ajax({
             type: "GET",
-            url: "@Url.Action("getPostType", "Home", new { area = string.Empty })",
+            url: "@Url.Action("getInitDataNewPost", "Home", new { area = string.Empty })",
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function (data) {
+                DataInit = data;
+                
+                $("#cbBuilding").val(data.mdPost.BuildingTypeID);
+                $("#cbPostType").val(data.mdPost.PostTypeID);
+                $("#Price").val(data.mdPost.SalePrice);
+                $("#PostTitle").val(data.mdPost.PostTitle);
+                $("#Description").val(data.mdPost.Description);
+                $("#cbProvince").val(data.mdPost.ProvinceID);
+                $("#cbDistrict").val(data.mdPost.DistrictID);
+                $("#cbSubDistrict").val(data.mdPost.SubDistrictID);
+                $("#RoadName").val(data.mdPost.RoadName);
+                $("#AddressNo").val(data.mdPost.AddressNo);
+
+
+                //----------------------Set Post Type
                 $("#cbPostType option").remove();
-                $("#cbPostType").append('<option value=0>--กรุณาเลือก--</option>');
-                for (var i = 0; i < data.length; i++) {
-                    $("#cbPostType").append('<option value=' + data[i].PostTypeID + '>' + data[i].PostTypeName + '</option>');
+                $("#cbPostType").append('<option value="">--กรุณาเลือก--</option>');
+                for (var i = 0; i < data.mdPostType.length; i++) {
+                    $("#cbPostType").append('<option value=' + data.mdPostType[i].PostTypeID + '>' + data.mdPostType[i].PostTypeName + '</option>');
                 }
-            } //success
-        });
-        $.ajax({
-            type: "GET",
-            url: "@Url.Action("getBuildingType", "Home", new { area = string.Empty })",
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function (data) {
+                //----------------------Set Building Type
                 $("#cbBuilding option").remove();
-
-                $("#cbBuilding").append('<option value=0>--กรุณาเลือก--</option>');
-                for (var i = 0; i < data.length; i++) {
-                    $("#cbBuilding").append('<option value=' + data[i].BuildingTypeID + '>' + data[i].BuildingTypeName + '</option>');
+                $("#cbBuilding").append('<option value="">--กรุณาเลือก--</option>');
+                for (var i = 0; i < data.mdBuildingType.length; i++) {
+                    $("#cbBuilding").append('<option value=' + data.mdBuildingType[i].BuildingTypeID + '>' + data.mdBuildingType[i].BuildingTypeName + '</option>');
                 }
-            } //success
-        });
-        $("#Price").change(function () {
-
-            var n = parseInt($("#Price").val().replace(/\,/g, ''));
-            if (isNaN(n)) $("#Price").val(0);
-            else $("#Price").val(numberWithCommas(n));
-        });
-        $.ajax({
-            type: "GET",
-            url: "@Url.Action("getAreaThailand", "Home", new { area = string.Empty })",
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function (data) {
-                Area = data;
+                //----------------------Set Area
                 $("#cbProvince option").remove();
                 $("#cbProvince optgroup").remove();
-                $("#cbProvince").append('<option value=0>--กรุณาเลือก--</option>');
+                $("#cbProvince").append('<option value="">--กรุณาเลือก--</option>');
                 for (var i = 0; i < data.mdProvinceGroup.length; i++) {
                     $("#cbProvince").append('<optgroup style="" id="aG' + data.mdProvinceGroup[i].ProvinceGroupID + '" label="' + data.mdProvinceGroup[i].ProvinceGroupName + '"></optgroup>');
                     for (var j = 0; j < data.mdProvince.length; j++) {
@@ -191,6 +200,12 @@
                     }
                 }
             } //success
+        });
+        $("#Price").change(function () {
+
+            var n = parseInt($("#Price").val().replace(/\,/g, ''));
+            if (isNaN(n)) $("#Price").val(0);
+            else $("#Price").val(numberWithCommas(n));
         });
         $("#cbProvince").change(function () {
             getDistrict($("#cbProvince").val());
@@ -213,10 +228,20 @@
         getDistrict(0);
         getSubDistrict(0);
     });
+    function intValueChange(textbox) {//textbox.id
+        var n = parseInt($("#" + textbox.id).val().replace(/\,/g, ''));
+        if (isNaN(n)) $("#" + textbox.id).val(0);
+        else $("#" + textbox.id).val(numberWithCommas(n));
+    }
+    function  numberValueChange(textbox) {
+        var n = parseFloat($("#"+textbox.id).val().replace(/\,/g, ''));
+        if (isNaN(n)) $("#" + textbox.id).val(0);
+        else $("#" + textbox.id).val(numberWithCommas(n));
+    }
     function getDistrict(id) {
-        var data = Area;
+        var data = DataInit;
         $("#cbDistrict option").remove();
-        $("#cbDistrict").append('<option value=0>--กรุณาเลือก--</option>');
+        $("#cbDistrict").append('<option value="">--กรุณาเลือก--</option>');
         if (data != null && data.mdDistrict != null) {
             for (var i = 0; i < data.mdDistrict.length; i++) {
                 if (data.mdDistrict[i].ProvinceID == id)
@@ -225,9 +250,9 @@
         }
     }
     function getSubDistrict(id) {
-        var data = Area;
+        var data = DataInit;
         $("#cbSubDistrict option").remove();
-        $("#cbSubDistrict").append('<option value=0>--กรุณาเลือก--</option>');
+        $("#cbSubDistrict").append('<option value="">--กรุณาเลือก--</option>');
         if (data != null && data.mdSubDistrict != null) {
             for (var i = 0; i < data.mdSubDistrict.length; i++) {
                 if (data.mdSubDistrict[i].DistrictID == id)
@@ -239,7 +264,6 @@
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     function setPostBuildingDetail() {
-        debugger
         if (!isNaN($("#cbBuilding").val()) && $("#cbBuilding").val() != null) {
             $.ajax({
                 type: "GET",
@@ -248,13 +272,60 @@
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
-                    //pnDetail
+                    postBuildingDetail= data;
+                    $("#pnDetail div").remove();
+
+                    for (var i = 0; i < data.mdPostGroupDetail.length; i++)
+                    {
+                        $("#pnDetail").append('<div class="col-md-12" style="margin-top: 15px;">' + data.mdPostGroupDetail[i].BuildingGroupDetailName
+                            + '</div><div class="col-md-12"><hr style="margin-top: 0px;margin-bottom:10px"/></div>');
+                        for (var j = 0; j < data.mdPostDetail.length; j++)
+                        {
+                            if (data.mdPostGroupDetail[i].BuildingGroupDetailID == data.mdPostDetail[j].BuildingGroupDetailID)
+                            {
+                                switch(data.mdPostDetail[j].DetailControlType  ) {
+                                    case 'TextBox':
+                                        $("#pnDetail").append('<div class="row"><div  class="col-sm-12"><label for="PostTitle" class="col-sm-2 control-label text-right">' + data.mdPostDetail[j].DetailName + '</label>'
+                                            + '<div class="col-sm-' + data.mdPostDetail[j].ColWidth + '"><input type="text" class="form-control  input-sm" id="tb_' + data.mdPostDetail[j].BuildingDetailID + '" value="'+data.mdPostDetail[j].PostBuildingDetailValue+'" placeholder="' + data.mdPostDetail[j].Placeholder + '"></div></div></div>');
+                                        break;
+                                    case 'ComboBox':
+                                        $("#pnDetail").append('');
+                                        break;
+                                    case 'CheckBox':
+                                        var checkvalue = '';if(data.mdPostDetail[j].PostBuildingDetailValue == 'true') checkvalue='checked';
+                                        $("#pnDetail").append('<div class="col-sm-offset-1 col-sm-2"><div class="checkbox"><label><input type="checkbox"id="chk_' + data.mdPostDetail[j].BuildingDetailID + '" '+checkvalue+'> ' + data.mdPostDetail[j].DetailName + '</label></div></div>');
+                                        break;
+                                    case 'Int':
+                                        $("#pnDetail").append('<div class="row"><div  class="col-sm-12">'
+                                                                + '    <label for="tb_' + data.mdPostDetail[j].BuildingDetailID + '" class="col-sm-2 control-label text-right">' + data.mdPostDetail[j].DetailName + '</label>'
+                                                                + '    <div class="col-sm-' + data.mdPostDetail[j].ColWidth + '">'
+                                                                + '        <div class="input-group">'
+                                                                + '            <input type="text" class="form-control " onchange="intValueChange(this);" id="tb_' + data.mdPostDetail[j].BuildingDetailID + '"  value="'+data.mdPostDetail[j].PostBuildingDetailValue+'" placeholder="' + data.mdPostDetail[j].Placeholder + '">'
+                                                                + '            <span class="input-group-addon">' + data.mdPostDetail[j].UnitName + '</span>'
+                                                                + '        </div>'
+                                                                + '    </div>'
+                                                                + '</div></div>');
+
+                                        break;
+                                    case 'Number':
+                                        $("#pnDetail").append('<div class="row"><div  class="col-sm-12">'
+                                                               + '    <label for="tb_' + data.mdPostDetail[j].BuildingDetailID + '" class="col-sm-2 control-label text-right">' + data.mdPostDetail[j].DetailName + '</label>'
+                                                               + '    <div class="col-sm-' + data.mdPostDetail[j].ColWidth + '">'
+                                                               + '        <div class="input-group">'
+                                                               + '            <input type="text" class="form-control " onchange="numberValueChange(this);" id="tb_' + data.mdPostDetail[j].BuildingDetailID + '"  value="'+data.mdPostDetail[j].PostBuildingDetailValue+'" placeholder="' + data.mdPostDetail[j].Placeholder + '">'
+                                                               + '            <span class="input-group-addon">' + data.mdPostDetail[j].UnitName + '</span>'
+                                                               + '        </div>'
+                                                               + '    </div>'
+                                                               + '</div></div>');
+                                        break;
+                                }
+                            }
+                        }
+                    }
                 } //success BuildingTypeID, int PostBuildingID
             });
         }
-
     }
-
 </script>
 
 <section class="content-header">
@@ -267,10 +338,27 @@
         <li class="active"> ขั้นตอน-ลงประกาศ</li>
     </ol>
 </section>
-<section class="content">    
+<section class="content">  
+    <div class="modal fade" id="modalMSG">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Message</h4>
+                </div>
+                <div class="modal-body" id="tbMSG">
+                    
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-default" data-dismiss="modal">Close</a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>  
     <div class="row">
         <div class="col-md-12">
-            <div class="box box-primary color-palette-box" id="pnPostNoRegis">
+            <div class="box box-primary color-palette-box" id="pnPostHeade">
                 <div class="box-header with-border">
                     <h3 class="box-title"><i class="fa fa-pencil-square-o"></i> ข้อมูลเบื้องต้น</h3>
                     <div class="box-tools pull-right">
@@ -281,112 +369,207 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="box-body">
-                        <div class="row">
-                            <label for="cbPostType" class="col-sm-3 control-label text-right"> ประกาศประเภท</label>
-                            <div class="col-sm-9">
-                                <div class="input-group">
-                                    <select class="form-control input-sm" id="cbPostType"></select>
+                        <div class="box-body">
+                            <div class="row">
+                                <label for="cbPostType" class="col-sm-3 control-label text-right">ประกาศ *</label>
+                                <div class="col-sm-9 has-error" id="pnPostType">
+                                    <div class="input-group">
+                                        <select class="form-control input-sm" name="cbPostType" id="cbPostType"></select>
+                                        <span class="help-block">กรุณาเลือก ประกาศ</span>
+                                    </div>
+                                </div>
+                                <script>
+                                    $("#cbPostType").focusout(function() {                                       
+                                        if($( "#cbPostType" ).val()==""){
+                                            $( "#pnPostType" ).addClass( "has-error" );
+                                            $( "#pnPostType div span" ).show();
+                                        }
+                                        else{
+                                            $( "#pnPostType" ).removeClass( "has-error" );
+                                            $( "#pnPostType div span" ).hide();
+                                        }
+                                    });
+                                </script>
+                            </div>
+                            <div class="row">
+                                <label for="cbBuilding" class="col-sm-3 control-label text-right">ประเภท *</label>
+
+                                <div class="col-sm-9 has-error" id="pnBuilding">
+                                    <div class="input-group">
+                                        <select class="form-control  input-sm" id="cbBuilding"></select>
+                                        <span class="help-block">กรุณาเลือก ประเภท</span>
+                                    </div>
+                                </div>
+                                <script>
+                                    $("#cbBuilding").focusout(function() {
+                                        if($( "#cbBuilding" ).val()==""){
+                                            $( "#pnBuilding" ).addClass( "has-error" );
+                                            $( "#pnBuilding div span" ).show();
+                                        }
+                                        else{
+                                            $( "#pnBuilding" ).removeClass( "has-error" );
+                                            $( "#pnBuilding div span" ).hide();
+                                        }
+                                    });
+                                </script>
+
+                            </div>
+                            <div class="col-md-12">
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <label for="PostTitle" class="col-sm-3 control-label text-right">หัวข้อประกาศ *</label>
+
+                                <div class="col-sm-5  has-error" id="pnPostTitle">
+                                    <input type="text" class="form-control  input-sm" name="PostTitle" id="PostTitle" placeholder="หัวข้อประกาศ">
+                                    <span class="help-block">กรุณาเพิ่มข้อมูล หัวข้อประกาศ</span>
+                                </div>
+                                <script>
+                                    $("#PostTitle").focusout(function() {
+                                        if($( "#PostTitle" ).val()==""){
+                                            $( "#pnPostTitle" ).addClass( "has-error" );
+                                            $( "#pnPostTitle span" ).show();
+                                        }
+                                        else{
+                                            $( "#pnPostTitle" ).removeClass( "has-error" );
+                                            $( "#pnPostTitle span" ).hide();
+                                        }
+                                    });
+                                </script>
+
+                            </div>
+                            <div class="row">
+                                <label for="Description" class="col-sm-3 control-label text-right">รายละเอียดเกี่ยวกับประกาศ</label>
+
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" rows="3" name="Description" id="Description" placeholder="รายละเอียดเกี่ยวกับประกาศ"></textarea>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <label for="cbBuilding" class="col-sm-3 control-label text-right"> ประเภท</label>
+                            <div class="col-md-12">
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <label for="Price" class="col-sm-3 control-label text-right">ราคา *</label>
+                                <div class="col-sm-5  has-error" id="pnPrice">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control text-right " id="Price" placeholder="ราคา">
+                                        <span class="input-group-addon">.00</span>
+                                    </div>
+                                    <span class="help-block">กรุณาระบุราคา</span>
+                                </div>
+                                <script>
+                                    $("#Price").focusout(function() {
+                                        if($( "#Price" ).val()==""){
+                                            $( "#pnPrice" ).removeClass( "has-warning" );
+                                            $( "#pnPrice" ).addClass( "has-error" );
+                                            $( "#pnPrice .help-block" ).show();
+                                        }
+                                        else if($( "#Price" ).val()=="0"){
+                                            $( "#pnPrice" ).removeClass( "has-error" );
+                                            $( "#pnPrice" ).addClass( "has-warning" );
+                                            $( "#pnPrice .help-block" ).hide();
+                                        }
+                                        else{
+                                            $( "#pnPrice" ).removeClass( "has-warning" );
+                                            $( "#pnPrice" ).removeClass( "has-error" );
+                                            $( "#pnPrice .help-block" ).hide();
+                                        }
+                                    });
+                                </script>
 
-                            <div class="col-sm-9">
-                                <div class="input-group">
-                                    <select class="form-control  input-sm" id="cbBuilding"></select>
+                            </div>
+                            <div class="row">
+                                <label for="cbProvince" class="col-sm-3 control-label text-right">จังหวัด *</label>
+
+                                <div class="col-sm-9 has-error" id="pnProvince">
+                                    <div class="input-group">
+                                        <select class="form-control" id="cbProvince"></select>
+                                        <span class="help-block">กรุณาเลือกจังหวัด</span>
+                                    </div>
+                                </div>
+                                <script>
+                                    $("#cbProvince").focusout(function() {
+                                        if($( "#cbProvince" ).val()==""){
+                                            $( "#pnProvince" ).addClass( "has-error" );
+                                            $( "#pnProvince .help-block" ).show();
+                                        }
+                                        else{
+                                            $( "#pnProvince" ).removeClass( "has-error" );
+                                            $( "#pnProvince .help-block" ).hide();
+                                        }
+                                    });
+                                </script>
+
+                            </div>
+                            <div class="row">
+                                <label for="cbDistrict" class="col-sm-3 control-label text-right">อำเภอ/เขต *</label>
+
+                                <div class="col-sm-9 has-error" id="pnDistrict">
+                                    <div class="input-group">
+                                        <select class="form-control" id="cbDistrict"></select>
+                                        <span class="help-block">กรุณาเลือก อำเภอ/เขต</span>
+                                    </div>
+                                </div>
+                                <script>
+                                    $("#cbDistrict").focusout(function() {
+                                        if($( "#cbDistrict" ).val()==""){
+                                            $( "#pnDistrict" ).addClass( "has-error" );
+                                            $( "#pnDistrict .help-block" ).show();
+                                        }
+                                        else{
+                                            $( "#pnDistrict" ).removeClass( "has-error" );
+                                            $( "#pnDistrict .help-block" ).hide();
+                                        }
+                                    });
+                                </script>
+
+                            </div>
+                            <div class="row">
+                                <label for="cbSubDistrict" class="col-sm-3 control-label text-right">ตำบล/แขวง *</label>
+
+                                <div class="col-sm-9 has-error" id="pnSubDistrict">
+                                    <div class="input-group">
+                                        <select class="form-control" id="cbSubDistrict"></select>
+                                        <span class="help-block">กรุณาเลือก ตำบล/แขวง</span>
+                                    </div>
+                                </div>
+                                <script>
+                                    $("#cbSubDistrict").focusout(function() {
+                                        if($( "#cbSubDistrict" ).val()==""){
+                                            $( "#pnSubDistrict" ).addClass( "has-error" );
+                                            $( "#pnSubDistrict .help-block" ).show();
+                                        }
+                                        else{
+                                            $( "#pnSubDistrict" ).removeClass( "has-error" );
+                                            $( "#pnSubDistrict .help-block" ).hide();
+                                        }
+                                    });
+                                </script>
+
+                            </div>
+                            <div class="row">
+                                <label for="RoadName" class="col-sm-3 control-label text-right"> ถนน</label>
+
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control  input-sm" id="RoadName" placeholder="ถนน">
+
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <hr>
-                        </div>
-                        <div class="row">
-                            <label for="PostTitle" class="col-sm-3 control-label text-right">* หัวข้อประกาศ</label>
+                            <div class="row">
+                                <label for="AddressNo" class="col-sm-3 control-label text-right"> ที่อยู่</label>
 
-                            <div class="col-sm-5">
-                                <input type="text" class="form-control  input-sm" id="PostTitle" placeholder="หัวข้อประกาศ">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <label for="Description" class="col-sm-3 control-label text-right">รายละเอียดเกี่ยวกับประกาศ</label>
-
-                            <div class="col-sm-9">
-                                <textarea class="form-control" rows="3" id="Description" placeholder="รายละเอียดเกี่ยวกับประกาศ"></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <hr>
-                        </div>
-                        <div class="row">
-                            <label for="Price" class="col-sm-3 control-label text-right">* ราคา</label>
-
-                            <div class="col-sm-5">
-                                <div class="input-group">
-                                    <input type="text" class="form-control text-right " id="Price" placeholder="ราคา">
-                                    <span class="input-group-addon">.00</span>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="row">
-                            <label for="cbProvince" class="col-sm-3 control-label text-right">* จังหวัด</label>
-
-                            <div class="col-sm-9">
-                                <div class="input-group">
-                                    <select class="form-control" id="cbProvince"></select>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control  input-sm" id="AddressNo" placeholder="ที่อยู่">
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <label for="cbDistrict" class="col-sm-3 control-label text-right">* อำเภอ/เขต</label>
 
-                            <div class="col-sm-9">
-                                <div class="input-group">
-                                    <select class="form-control" id="cbDistrict"></select>
-                                </div>
-                            </div>
                         </div>
-                        <div class="row">
-                            <label for="cbSubDistrict" class="col-sm-3 control-label text-right">* ตำบล/แขวง</label>
-
-                            <div class="col-sm-9">
-                                <div class="input-group">
-                                    <select class="form-control" id="cbSubDistrict"></select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <label for="cbSubDistrict" class="col-sm-3 control-label text-right"> ถนน</label>
-
-                            <div class="col-sm-5">
-                                <input type="text" class="form-control  input-sm" id="RoadName" placeholder="ถนน">
-                               
-                            </div>
-                        </div>
-                        <div class="row">
-                            <label for="cbSubDistrict" class="col-sm-3 control-label text-right"> ที่อยู่</label>
-
-                            <div class="col-sm-5">
-                                <input type="text" class="form-control  input-sm" id="AddressNo" placeholder="ที่อยู่">
-                            </div>
-                        </div>
+                        @*<input type="submit" />*@
+                    
+                    <div class="col-md-12">
+                        <hr>
                     </div>
-                </div>                
-            </div>
-
-
-            <div class="box box-primary color-palette-box" id="pnPostNoRegis">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-map-marker"></i> แผนที่ google map</h3>
-                    <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="box-body">
+                    <!--------------------------------------ระบุพิกัด---------------------------------->
                     <div class="box-body">
                         <div id="map_canvas"></div>
                         <div id="showDD" style="margin:auto;padding-top:5px;width:550px;">
@@ -401,39 +584,284 @@
                                 <input name="lat_value" type="text" id="lat_value" value="0" size="17" disabled />
                                 Longitude
                                 <input name="lon_value" type="text" id="lon_value" value="0" size="17" disabled />
-                                @*Zoom
-                                <input name="zoom_value" type="text" id="zoom_value" value="0" size="5" disabled />*@
-                                @*<input type="submit" name="button" id="button" value="บันทึก" />*@
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>    
+                <div class="box-footer">
+                    <button type="button" class="pull-left  btn btn-default" disabled>
+                        <i class="fa fa-arrow-circle-left"></i> Back
+                    </button>
+                    <button type="button" class="pull-right btn btn-success" onclick="HeadeNext();">
+                        Next <i class="fa fa-arrow-circle-right"></i>
+                    </button>
+                    <script>
+                        function HeadeNext() {   
+                            var numItems = $('#pnPostHeade .has-error').length
+                            if(numItems>0){
+                                $('#tbMSG div').remove();
+                                $('#tbMSG').append('<div>กรุณาตรวจสอบข้อมูล</div>');
+                                $('#modalMSG').modal('show');
+                            }
+                            else{
+                                var dat = DataInit;
+                                dat.mdPost.BuildingTypeID = $("#cbBuilding").val();
+                                dat.mdPost.PostTypeID = $("#cbPostType").val();
+                                dat.mdPost.SalePrice = parseInt($("#Price").val().replace(/\,/g, ''));
+                                dat.mdPost.PostTitle = $("#PostTitle").val();
+                                dat.mdPost.Description = $("#Description").val();
+                                dat.mdPost.ProvinceID = $("#cbProvince").val();
+                                dat.mdPost.DistrictID = $("#cbDistrict").val();
+                                dat.mdPost.SubDistrictID = $("#cbSubDistrict").val();
+                                dat.mdPost.RoadName = $("#RoadName").val();
+                                dat.mdPost.AddressNo = $("#AddressNo").val();
+                                dat.mdPost.UserID = $("#fairygroup").data("auid");
+                                dat.mdPost.LatitudeMap = parseFloat($("#lat_value").val().replace(/\,/g, ''));
+                                dat.mdPost.LongitudeMap = parseFloat($("#lon_value").val().replace(/\,/g, ''));
+                                if ('@ViewBag.Owner' == '1')dat.mdPost.isOwner = true;
+                                else dat.mdPost.isOwner = false;
+                            
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("SavePostHeader", "Home", new { area = string.Empty })",
+                                    data: JSON.stringify(dat.mdPost),
+                                    dataType: "json",
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function (data) {
+                                        postID = data.PostBuildingID
+                                        DataInit.mdPost = data;
+                                        var Owner =1;if(!data.isOwner)Owner=2;
+                                    
+                                        //ChangeUrl(''
+                                        //    , window.location.origin + window.location.pathname+'?owner='+Owner+'&PostBuildingID='+data.PostBuildingID) ;
+                                        //jQuery.param.querystring(window.location.href, 'owner='+Owner+'&PostBuildingID='+data.PostBuildingID);
+
+                                        $('#pnPostHeade').hide();
+                                        $('#pnPostDetail').show();
+                                        $('#pnPostImage').hide();
+                                        $('#pnPostCommit').hide();
+                                    } //success
+                                });
+                            }
+                        }
+                        function ChangeUrl(page, url) {
+                            if (typeof (history.pushState) != "undefined") {
+                                var obj = { Page: page, Url: url };
+                                history.pushState(obj, obj.Page, obj.Url);
+                            } else {
+                                alert("Browser does not support HTML5.");
+                            }
+                        }
+
+                    </script>
+                </div>            
             </div>
-
-
-            <div class="box box-primary color-palette-box" id="pnPostNoRegis">
+           
+            <div class="box box-primary color-palette-box" id="pnPostDetail">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-comment"></i> รายละเอียด</h3>
+                    <h3 class="box-title"><i class="fa fa-file-text-o"></i> รายละเอียด</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse">
                             <i class="fa fa-minus"></i>
                         </button>
                     </div>
                 </div>
-                <div class="box-body">
-                    <div class="box-body" id="pnDetail">
+                <div class="box-body" id="pnDetail">
 
-
-
-                    </div>
                 </div>
+                <div class="box-footer">
+                    <button type="button" class="pull-left  btn btn-default" onclick="$('#pnPostHeade').show(); $('#pnPostDetail').hide(); $('#pnPostImage').hide(); $('#pnPostCommit').hide();">
+                        <i class="fa fa-arrow-circle-left"></i> Back
+                    </button>
+                    <button type="button" class="pull-right btn btn-success" onclick="PostDetailNext();">
+                        Next <i class="fa fa-arrow-circle-right"></i>
+                    </button>
+                    <script>
+                        function PostDetailNext() {
+                            var data = postBuildingDetail;
+
+
+                            for (var j = 0; j < data.mdPostDetail.length; j++)
+                            {
+                                data.mdPostDetail[j].PostBuildingID = postID;
+                                switch(data.mdPostDetail[j].DetailControlType  ) {
+                                    case 'TextBox':
+                                        data.mdPostDetail[j].PostBuildingDetailValue = $('#tb_' + data.mdPostDetail[j].BuildingDetailID ).val();
+                                        break;
+                                   
+                                    case 'CheckBox':
+                                        data.mdPostDetail[j].PostBuildingDetailValue = $('#chk_' + data.mdPostDetail[j].BuildingDetailID ).prop( "checked" ).toString()
+                                        break;
+                                    case 'Int':
+                                        data.mdPostDetail[j].PostBuildingDetailValue = $('#tb_' + data.mdPostDetail[j].BuildingDetailID ).val();
+
+
+                                        break;
+                                    case 'Number':
+                                        data.mdPostDetail[j].PostBuildingDetailValue = $('#tb_' + data.mdPostDetail[j].BuildingDetailID ).val();
+
+                                        break;
+                                }
+
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("SavePostDetail", "Home", new { area = string.Empty })",
+                                    data: JSON.stringify(data.mdPostDetail[j]),
+                                    dataType: "json",
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function (data) {
+                                        debugger
+                                        $('#pnPostHeade').hide();                                        
+                                        $('#pnPostDetail').hide(); 
+                                        $('#pnPostImage').show(); 
+                                        $('#pnPostCommit').hide();
+                                    } //success
+                                });
+                                
+                            }
+
+
+                            //for(var i=0;i<dat.mdPostDetail.length;i++)
+                            //{
+                            //    dat.mdPostDetail[i]
+                            //}
+                            @*$.ajax({
+                                type: "POST",
+                                url: "@Url.Action("SavePostDetail", "Home", new { area = string.Empty })",
+                                data: JSON.stringify(data.mdPostDetail),
+                                dataType: "json",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (data) {
+                                    debugger
+
+
+                                    $('#pnPostHeade').hide(); $('#pnPostMap').hide(); $('#pnPostDetail').hide(); $('#pnPostImage').show(); $('#pnPostCommit').hide();
+                                } //success
+                            });*@
+                        }
+                    </script>
+
+                </div> 
             </div>
 
-          
-
-            <div class="box box-primary color-palette-box" id="pnPostNoRegis">
+            <div class="box box-primary color-palette-box" id="pnPostImage">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-comment"></i> ยืนยันการลงประกาศ</h3>
+                    <h3 class="box-title"><i class="fa fa-image "></i> แนบรูปภาพ</h3>
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body" >
+                    
+                    <form action="/Home/PostBuldingUpload" enctype="multipart/form-data" method="post" id="fileUploadForm">
+                        <div class="form-group">
+                            <label for="ImageFile" class="col-sm-2 control-label">Image:</label>
+                            <div class="col-sm-6">
+                                <input type="file" multiple="" name="Postfiles" id="Postfiles" accept="image/*">
+                            </div>
+                            <input id="btUpload2" type="button" value="Upload File" />
+                        </div>
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover" id="tbImg">
+                                <tbody>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Image</th>
+                                        <th>File Name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+
+                                $("#btUpload2").click(function () {
+
+                                    var formData = new FormData( $('#fileUploadForm')[0]);
+                                    //var idv =2;
+                                    $.ajax({
+                                        url: '/Home/PostBuldingUpload?id='+postID,
+                                        data:formData,
+                                        processData: false,
+                                        type: 'POST',
+                                        enctype: 'multipart/form-data',
+                                        contentType: false,
+                                        cache: false,
+                                        success: function (data) {
+                                            if(data==""){
+                                                $("#Postfiles").val("");
+                                                ReloadImg();
+                                            }
+                                            else alert(data);
+                                        }
+                                    });
+                                });
+                                //e.preventDefault();
+                            });
+                            function ReloadImg(){
+                                $.ajax({
+                                    url: '/Home/getPostBuildingByUser?id='+postID,
+                                    type: 'POST',
+                                    success: function (data) {
+                                        $("#tbImg tbody tr").remove();
+                                        for(var i = 0;i<data.length;i++)
+                                        {
+                                            $("#tbImg tbody").append( '<tr>'+
+                                                                       '    <td>'+data[i].PostBuildingImgID+'</td>'+
+                                                                       '    <td><img style="max-width:100px;max-height:100px"  src="' + data[i].PathName + data[i].FileName + '" alt="Grid"></a></td>'+
+                                                                       '    <td>'+ data[i].FileName + '</td>'+
+                                                                       '    <td><button type="button" class=" btn btn-xs btn-danger" onclick="DeleteImg('+data[i].PostBuildingImgID+')"><i class="fa fa-trash"></i></button></td>'+
+                                                                       '</tr>');
+
+                                        }
+                                    }
+                                });
+                            }
+                            function DeleteImg(ImgID){
+                                $.ajax({
+                                    url: '/Home/DeleteImg?ImgID='+ImgID,
+                                    type: 'POST',
+                                    success: function (data) {
+                                        if(data=="")ReloadImg();
+                                    else alert(data);
+                                    }
+                                });
+                            }
+                            function PostBuildingConfirm() {
+                                //$('#pnPostHeade').hide(); $('#pnPostDetail').hide(); $('#pnPostImage').hide(); $('#pnPostCommit').show();
+                                $.ajax({
+                                    url: '/Home/PostBuldingConfirm?id='+postID,
+                                    type: 'POST',
+                                    success: function (data) {
+                                        window.location.href = "@Url.Action("Post", "Home", new { area = string.Empty })";                                        
+                                    }
+                                });
+                            }
+
+                        </script>
+
+                    </form>                   
+                    
+                </div>
+                <div class="box-footer">
+                    <button type="button" class="pull-left  btn btn-default" onclick="$('#pnPostHeade').hide(); $('#pnPostDetail').show(); $('#pnPostImage').hide(); $('#pnPostCommit').hide();">
+                        <i class="fa fa-arrow-circle-left"></i> Back 
+                    </button>
+                    <button type="button" class="pull-right btn btn-success" onclick="PostBuildingConfirm();">
+                        ลงประกาศ <i class="fa fa-arrow-circle-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box box-primary color-palette-box" id="pnPostCommit">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-check-circle"></i> ยืนยันการลงประกาศ</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse">
                             <i class="fa fa-minus"></i>
@@ -442,72 +870,19 @@
                 </div>
                 <div class="box-body">
                     <div class="box-body">
-
-
+                       
 
                     </div>
                 </div>
+                <div class="box-footer">
+                    <button type="button" class="pull-left  btn btn-default" onclick="$('#pnPostHeade').hide(); $('#pnPostDetail').hide(); $('#pnPostImage').show(); $('#pnPostCommit').hide();">
+                        <i class="fa fa-arrow-circle-left"></i> Back
+                    </button>
+                    <button type="button" class="pull-right btn btn-success" >
+                        Post <i class="fa fa-check-circle"></i>
+                    </button>
+                </div>
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         </div>
-
     </div>
 </section>
-@*<div id="wizard" style="overflow :auto">
-        <h4>ข้อมูลเบื้องต้น</h4>
-        <section>
-
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut nulla nunc. Maecenas arcu sem, hendrerit a tempor quis,
-                sagittis accumsan tellus. In hac habitasse platea dictumst. Donec a semper dui. Nunc eget quam libero. Nam at felis metus.
-                Nam tellus dolor, tristique ac tempus nec, iaculis quis nisi.
-            </p>
-        </section>
-        <h2>แผนที่ google map</h2>
-        <section>
-            <p>
-                Donec mi sapien, hendrerit nec egestas a, rutrum vitae dolor. Nullam venenatis diam ac ligula elementum pellentesque.
-                In lobortis sollicitudin felis non eleifend. Morbi tristique tellus est, sed tempor elit. Morbi varius, nulla quis condimentum
-                dictum, nisi elit condimentum magna, nec venenatis urna quam in nisi. Integer hendrerit sapien a diam adipiscing consectetur.
-                In euismod augue ullamcorper leo dignissim quis elementum arcu porta. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Vestibulum leo velit, blandit ac tempor nec, ultrices id diam. Donec metus lacus, rhoncus sagittis iaculis nec, malesuada a diam.
-                Donec non pulvinar urna. Aliquam id velit lacus.
-            </p>
-        </section>
-        <h2>รายละเอียด</h2>
-        <section>
-            <p>
-                Morbi ornare tellus at elit ultrices id dignissim lorem elementum. Sed eget nisl at justo condimentum dapibus. Fusce eros justo,
-                pellentesque non euismod ac, rutrum sed quam. Ut non mi tortor. Vestibulum eleifend varius ullamcorper. Aliquam erat volutpat.
-                Donec diam massa, porta vel dictum sit amet, iaculis ac massa. Sed elementum dui commodo lectus sollicitudin in auctor mauris
-                venenatis.
-            </p>
-        </section>
-        <h2>ยืนยันการลงประกาศ</h2>
-        <section>
-            *<p>
-                Quisque at sem turpis, id sagittis diam. Suspendisse malesuada eros posuere mauris vehicula vulputate. Aliquam sed sem tortor.
-                Quisque sed felis ut mauris feugiat iaculis nec ac lectus. Sed consequat vestibulum purus, imperdiet varius est pellentesque vitae.
-                Suspendisse consequat cursus eros, vitae tempus enim euismod non. Nullam ut commodo tortor.
-            </p>
-        </section>
-    </div>*@

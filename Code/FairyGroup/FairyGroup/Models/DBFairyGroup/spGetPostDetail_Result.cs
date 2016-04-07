@@ -25,5 +25,8 @@ namespace FairyGroup.Models.DBFairyGroup
         public Nullable<int> PostBuildingID { get; set; }
         public Nullable<int> PostBuildingDetailID { get; set; }
         public string PostBuildingDetailValue { get; set; }
+        public string Placeholder { get; set; }
+        public Nullable<int> ColWidth { get; set; }
+        public string UnitName { get; set; }
     }
 }

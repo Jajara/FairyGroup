@@ -11,25 +11,68 @@
         var isPost = false;
         var isOwner = -1;
 
-        
-
         $("#ownerPost").click(function () {
             isOwner = 1;
             PostBuilding();
         });
         $("#agentPost").click(function () {
-            isOwner = 0;
+            isOwner = 2;
             PostBuilding();
         });
         function PostBuilding() {
-
             if ($("#fairygroup").data("autype") == null) {
                 $("#login").modal('show');
             }
             else {
-                window.location.href = "@Url.Action("PostBuilding", "Home", new { area = string.Empty })" + "?owner=" + isOwner;
+                window.location.href = "@Url.Action("PostBuilding", "Home", new { area = string.Empty })" + "?owner=" + isOwner + '&PostBuildingID=0';
             }
         }
+        $.cookie.defaults = { path: '/' };
+        var auid = $.cookie('auid');
+        if (auid != null)
+        {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getPostBuildingByUser", "Home", new { area = string.Empty })",
+                data: {
+                    BuildingTypeID: 0,
+                    priceID: 0,
+                    ProvinceID: 0,
+                    DistrictID: 0,
+                    keySearch: '',
+                    UserID: auid
+                },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#tbPost tbody tr").remove();
+                    for (var i = 0; i < data.length; i++) {
+                        $("#tbPost tbody").append('<tr>' +
+                                                   '    <td>' + data[i].PostBuildingID + '</td>' +
+                                                   '    <td>' + data[i].UpdateStr + '</td>' +
+                                                   '    <td>' + data[i].PostTypeName + '</td>' +
+                                                   '    <td>' + data[i].BuildingTypeName + '</td>' +
+                                                   '    <td>' + data[i].PostTitle + '</td>' +
+                                                   '    <td>' + data[i].PostStatus + '</td>' +
+                                                   '    <td>' +
+                                                   '         <button type="button" class=" btn btn-xs btn-info" onclick="Edit(' + data[i].PostBuildingID + ')"><i class="fa fa-pencil-square-o"></i></button>' +
+                                                   '         <button type="button" class=" btn btn-xs btn-danger" onclick="Delete(' + data[i].PostBuildingID + ')"><i class="fa fa-trash"></i></button>' +
+                                                   '    </td>' +
+                                                   '</tr>');
+                        /*
+                                <th>ID</th>
+                                <th>วันที่</th>
+                                <th>ประกาศ</th>
+                                <th>ประเภท</th>
+                                <th>หัวข้อประกาศ</th>
+                                <th>สถานะ</th>
+                                <th></th>
+                        */
+                    }
+                }
+            });
+        }
+
         $("#bt_Login").click(function () {
             $.ajax({
                 type: "GET",
@@ -47,7 +90,7 @@
                     $.cookie('autype', data.UserTypeID, { expires: 1 });
 
 
-                    window.location.href = "@Url.Action("PostBuilding", "Home", new { area = string.Empty })" + "?owner=" + isOwner;
+                    window.location.href = "@Url.Action("PostBuilding", "Home", new { area = string.Empty })" + "?owner=" + isOwner + '&PostBuildingID=0';
 
                 }
             });
@@ -100,8 +143,6 @@
                                 <!-- /.col -->
                             </div>
                         </form>
-
-
                         <a href="#">I forgot my password</a><br>
                         <a href="@Url.Action("Regist", "Home", new { area = string.Empty })" class="text-center">Register a new membership</a>
 
@@ -154,8 +195,33 @@
                     </div>
                 </div><!-- /.box-footer -->
             </div>
-            
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">ประกาศ</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover" id="tbPost">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>วันที่</th>
+                                <th>ประกาศ</th>
+                                <th>ประเภท</th>
+                                <th>หัวข้อประกาศ</th>
+                                <th>สถานะ</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
         </div>
       
     </div>
+
 </section>

@@ -35,7 +35,6 @@ namespace FairyGroup.Models.DBFairyGroup
         public virtual DbSet<CompanyProfile> CompanyProfiles { get; set; }
         public virtual DbSet<District> Districts { get; set; }
         public virtual DbSet<LogMail> LogMails { get; set; }
-        public virtual DbSet<PostBuilding> PostBuildings { get; set; }
         public virtual DbSet<PostBuildingDetail> PostBuildingDetails { get; set; }
         public virtual DbSet<PostBuildingImg> PostBuildingImgs { get; set; }
         public virtual DbSet<PostType> PostTypes { get; set; }
@@ -47,6 +46,7 @@ namespace FairyGroup.Models.DBFairyGroup
         public virtual DbSet<SystemConfig> SystemConfigs { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserType> UserTypes { get; set; }
+        public virtual DbSet<PostBuilding> PostBuildings { get; set; }
     
         public virtual int BackUpdateDB()
         {
@@ -120,6 +120,39 @@ namespace FairyGroup.Models.DBFairyGroup
                 new ObjectParameter("MINDATE", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spPostBuilding_List_Result>("spPostBuilding_List", buildingTypeIDParameter, priceIDParameter, provinceIDParameter, districtIDParameter, keySearchParameter, mINDATEParameter);
+        }
+    
+        public virtual ObjectResult<spPostBuilding_ListByUser_Result> spPostBuilding_ListByUser(Nullable<int> buildingTypeID, Nullable<int> priceID, Nullable<int> provinceID, Nullable<int> districtID, string keySearch, string mINDATE, Nullable<int> userID)
+        {
+            var buildingTypeIDParameter = buildingTypeID.HasValue ?
+                new ObjectParameter("BuildingTypeID", buildingTypeID) :
+                new ObjectParameter("BuildingTypeID", typeof(int));
+    
+            var priceIDParameter = priceID.HasValue ?
+                new ObjectParameter("PriceID", priceID) :
+                new ObjectParameter("PriceID", typeof(int));
+    
+            var provinceIDParameter = provinceID.HasValue ?
+                new ObjectParameter("ProvinceID", provinceID) :
+                new ObjectParameter("ProvinceID", typeof(int));
+    
+            var districtIDParameter = districtID.HasValue ?
+                new ObjectParameter("DistrictID", districtID) :
+                new ObjectParameter("DistrictID", typeof(int));
+    
+            var keySearchParameter = keySearch != null ?
+                new ObjectParameter("KeySearch", keySearch) :
+                new ObjectParameter("KeySearch", typeof(string));
+    
+            var mINDATEParameter = mINDATE != null ?
+                new ObjectParameter("MINDATE", mINDATE) :
+                new ObjectParameter("MINDATE", typeof(string));
+    
+            var userIDParameter = userID.HasValue ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spPostBuilding_ListByUser_Result>("spPostBuilding_ListByUser", buildingTypeIDParameter, priceIDParameter, provinceIDParameter, districtIDParameter, keySearchParameter, mINDATEParameter, userIDParameter);
         }
     }
 }

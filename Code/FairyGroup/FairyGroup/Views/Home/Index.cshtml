@@ -73,9 +73,124 @@
     var Area;
     var search = 'l';
     var data;
+    var pag;
     $(document).ready(function () {
 
         //-----------------------Initial-----------------------//
+        
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getPostBuildingExclusive", "Home", new { area = string.Empty })",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                var ol = '<ol class="carousel-indicators" id="carouselOl"></ol>';
+                var carousel = '<div class="carousel-inner" id="carouselInner"></div>';
+                for (var i = 0; i < data.length; i++) {
+                    if (i == 0) {
+                        $("#carouselOl").append('<li data-target="#carousel-example-generic" data-slide-to="' + i.toString() + '" class="active"></li>');
+
+                        $("#carouselInner").append(' <div class="item active">'+
+                                                   '     <div class="container slider-container">'+
+                                                   '         <img class="pull-right" style="max-height:200px" src="' + data[i].ImgName + '" alt="" />' +
+                                                   '         <h2>' + data[i].PostTypeName + '!!! ' + data[i].BuildingTypeName + '  ' + data[i].SalePrice + '฿ </h2>' +
+                                                   '         <h3 class="gap">' + data[i].Description + '</h3>' +
+                                                   '         <a class=" btn btn-large btn-transparent " href="#">Read more</a>'+
+                                                   '     </div>' +
+                                                   ' </div>');
+                    }
+                    else {
+                        $("#carouselOl").append('<li data-target="#carousel-example-generic" data-slide-to=' + i.toString() + '" class=""></li>');
+
+
+                        $("#carouselInner").append( '<div class="item">' +
+                                                    '    <div class="container slider-container">'+
+                                                    '        <img class="pull-right" style="max-height: 200px" src="' + data[i].ImgName + '" alt="" />' +
+                                                    '        <h2>' + data[i].PostTypeName + '!!! ' + data[i].BuildingTypeName + '  ' + data[i].SalePrice + '฿</h2>' +
+                                                    '        <h3 class="gap">' + data[i].Description + '</h3>' +
+                                                    '        <a class="btn btn-large btn-transparent " href="#">Read more</a>'+
+                                                    '    </div>'+
+                                                    '</div>');
+                    }
+
+
+                }
+                //for (var i = 0; i < data.length ; i++) {
+                //    if (i >= minlist && i < maxlist) {
+                //        var addclass = 'clearfix';
+                //        if (i % 2 == 0) addclass += ' alt';
+                //        $("#products").append(
+                //            '<li class="' + addclass + '">' +
+                //            '    <section class="left">' +
+                //            '        <img src="' + data[i].ImgName + '" alt="default thumb" style="max-width:130px;max-height:130px" class="thumb">' +
+                //            '        <h4 style="margin-top: 5px;margin-bottom: 5px;">' + data[i].PostTypeName + '!!! ' + data[i].BuildingTypeName + '</h4>' +
+                //            //'        <span class="meta">ID: ' + (data[i].PostTypeID * 1000) + data[i].PostBuildingID + '</span>' +
+                //            '        <span class="meta">' + data[i].Description + '</span>' +
+                //            '    </section>' +
+                //            '    <section class="right">' +
+                //            '        <span class="price">' + data[i].SalePrice + ' ฿</span>' +
+                //            '        <span class="darkview">' +
+                //            '        <a href="javascript:void(0);" class="firstbtn"><img src="/Images/read-more-btn.png" alt="Read More..."></a>' +
+                //            //'        <a href="javascript:void(0);"><img src="images/add-to-cart-btn.png" alt="Add to Cart"></a>'+
+                //            '        </span>' +
+                //            '    </section>' +
+                //            '</li>'
+                //            );
+                //    }
+                //}
+                //carousel-example-generic
+                //carouselOl
+                //carouselInner
+                /*
+            <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
+                <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
+                <li data-target="#carousel-example-generic" data-slide-to="3" class=""></li>
+            </ol>
+            <div class="carousel-inner">
+                <div class="item active">
+                    <div class="container slider-container">
+                        <img class="pull-right" style="max-height:200px" src="~/Images/slider-img/twitter.png" alt="" />
+                        <h2>Twitter Bootstrap</h2>
+                        <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
+                        <a class=" btn btn-large btn-transparent " href="#">Read more</a>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="container slider-container">
+                        <img class="pull-right" style="max-height: 200px" src="~/Images/slider-img/responsive.png" alt="" />
+                        <h2>Responsive Design</h2>
+                        <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
+                        <a class="btn btn-large btn-transparent " href="#">Read more</a>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="container slider-container">
+                        <img class="pull-right" style="max-height: 200px" src="~/Images/slider-img/html5.png" alt="" />
+                        <h2>HTML5</h2>
+                        <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
+                        <a class="btn btn-large btn-transparent " href="#">Read more</a>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="container slider-container">
+                        <img class="pull-right" style="max-height: 200px; border-radius: 15px;" src="~/Images/slider-img/12799297_238347396508423_2775818766646584014_n.jpg" alt="" />
+                        <h2>ขาย!!</h2>
+                        <h3 class="gap">ขาย!! บ้านเดี่ยว หมู่บ้านมาสเตอร์พีช รัตนาธิเบศก์ตกแต่งครบพร้อมอยู่ 156 ตร.ว. พื้นที่ใช้สอยกว่า 600 ตารางเมตร >>ติดสถานีรถไฟฟ้าสายสีม่วง</h3>
+                        <a class="btn btn-large btn-transparent " href="https://www.facebook.com/fairygroupcompany/photos/pcb.238348659841630/238347396508423/?type=3" target="_blank">Read more</a>
+                    </div>
+                </div>
+            </div>
+                
+                
+                */
+
+
+
+            } //success
+        });
+
         $.ajax({
             type: "GET",
             url: "@Url.Action("getBuildingType", "Home", new { area = string.Empty })",
@@ -219,23 +334,31 @@
                 var totalpage = parseInt(data.length / 20);
                 if (data.length % 20 > 0) totalpage++;
                 //totalpage++;
-                var pag = $('#pagination').simplePaginator({
-                    totalPages: totalpage,
-                    pageChange: function (page) {
-                        $("#products").data("page", page);
-                        //$('#content').empty().text('Page is ' + page);                        
-                        setList();
-                    }
-                });
-                $('#changeTotalPages').click(function () {
-                    pag.simplePaginator('setTotalPages', 10);
-                })
-                $('#changePage').click(function () {
-                    pag.simplePaginator('changePage', 3);
-                })
-                $('#hide').click(function () {
-                    pag.simplePaginator('hide');
-                })
+                //var p = $('#pagination').simplePaginator();
+                var setpage = 1;
+                if (totalpage != 0) setpage = totalpage;
+                if (pag == null) {
+                    pag = $('#pagination').simplePaginator({
+                        totalPages: setpage,
+                        pageChange: function (page) {
+                            $("#products").data("page", page);
+                            //$('#content').empty().text('Page is ' + page);                        
+                            setList();
+                        }
+                    });
+                }
+                else {
+                    pag.simplePaginator('setTotalPages', setpage);
+                }
+                //$('#changeTotalPages').click(function () {
+                //    pag.simplePaginator('setTotalPages', 10);
+                //})
+                //$('#changePage').click(function () {
+                //    pag.simplePaginator('changePage', 3);
+                //})
+                //$('#hide').click(function () {
+                //    pag.simplePaginator('hide');
+                //})
                 setList(); 
             } //success
         });
@@ -246,47 +369,9 @@
 <div class="box box-solid" style="margin-top:20px;">
     <!-- /.box-header -->
     <div class="box-body">
-        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" >
-            <ol class="carousel-indicators">
-                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-                <li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
-                <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
-                <li data-target="#carousel-example-generic" data-slide-to="3" class=""></li>
-            </ol>
-            <div class="carousel-inner">
-                <div class="item active">
-                    <div class="container slider-container">
-                        <img class="pull-right" style="max-height:200px" src="~/Images/slider-img/twitter.png" alt="" />
-                        <h2>Twitter Bootstrap</h2>
-                        <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
-                        <a class=" btn btn-large btn-transparent " href="#">Read more</a>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="container slider-container">
-                        <img class="pull-right" style="max-height: 200px" src="~/Images/slider-img/responsive.png" alt="" />
-                        <h2>Responsive Design</h2>
-                        <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
-                        <a class="btn btn-large btn-transparent " href="#">Read more</a>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="container slider-container">
-                        <img class="pull-right" style="max-height: 200px" src="~/Images/slider-img/html5.png" alt="" />
-                        <h2>HTML5</h2>
-                        <h3 class="gap">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</h3>
-                        <a class="btn btn-large btn-transparent " href="#">Read more</a>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="container slider-container">
-                        <img class="pull-right" style="max-height: 200px; border-radius: 15px;" src="~/Images/slider-img/12799297_238347396508423_2775818766646584014_n.jpg" alt="" />
-                        <h2>ขาย!!</h2>
-                        <h3 class="gap">ขาย!! บ้านเดี่ยว หมู่บ้านมาสเตอร์พีช รัตนาธิเบศก์ตกแต่งครบพร้อมอยู่ 156 ตร.ว. พื้นที่ใช้สอยกว่า 600 ตารางเมตร >>ติดสถานีรถไฟฟ้าสายสีม่วง</h3>
-                        <a class="btn btn-large btn-transparent " href="https://www.facebook.com/fairygroupcompany/photos/pcb.238348659841630/238347396508423/?type=3" target="_blank">Read more</a>
-                    </div>
-                </div>
-            </div>
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel"  >
+            <ol class="carousel-indicators" id="carouselOl"></ol>
+            <div class="carousel-inner" id="carouselInner"></div>
         </div>
     </div>
     <!-- /.box-body -->
@@ -306,22 +391,22 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>ประเภท</label>
-                            <select id="cbBuilding" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true"></select>
+                            <select id="cbBuilding" class="form-control select2 " style="width: 100%;" tabindex="-1" aria-hidden="true"></select>
                         </div><!-- /.form-group -->
                         <div id="divArea" class="form-group">
                             <label>จังหวัด</label>
-                            <select id="cbProvince" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true"></select>
+                            <select id="cbProvince" class="form-control select2 " style="width: 100%;" tabindex="-1" aria-hidden="true"></select>
                         </div><!-- /.form-group -->
                     </div><!-- /.col -->
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>ราคา</label>
-                            <select id="cbAmount" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true">               
+                            <select id="cbAmount" class="form-control select2 " style="width: 100%;" tabindex="-1" aria-hidden="true">               
                             </select>
                         </div><!-- /.form-group -->
                         <div class="form-group">
                             <label>อำเภอ/เขต</label>
-                            <select id="cbDistrict" class="form-control select2 select2-hidden-accessible" style="width: 100%;" tabindex="-1" aria-hidden="true"></select>
+                            <select id="cbDistrict" class="form-control select2 " style="width: 100%;" tabindex="-1" aria-hidden="true"></select>
                         </div><!-- /.form-group -->
                     </div><!-- /.col -->
                 </div><!-- /.row -->

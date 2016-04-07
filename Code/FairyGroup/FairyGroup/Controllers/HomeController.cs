@@ -1,4 +1,5 @@
-﻿using FairyGroup.Models.DBFairyGroup;
+﻿using FairyGroup.Models;
+using FairyGroup.Models.DBFairyGroup;
 using FairyGroup.Models.Home;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace FairyGroup.Controllers
 {
     public class HomeController : Controller
     {
+        int p_PostBuildingID = 0;
         public ActionResult Index()
         {
             return View();
@@ -40,14 +42,21 @@ namespace FairyGroup.Controllers
 
             return View();
         }
+        public ActionResult MaintenancePage()
+        {
+            return View();
+        }
         public ActionResult Profile()
         {
 
             return View();
         }
-        public ActionResult PostBuilding(int owner)
+        public ActionResult PostBuilding(int owner = 0, int PostBuildingID=0)
         {
             ViewBag.Owner = owner;
+            //if (ViewBag.PostBuildingID == null) 
+            p_PostBuildingID = PostBuildingID;
+            ViewBag.PostBuildingID = PostBuildingID;
             return View();
         }
 
@@ -192,7 +201,42 @@ namespace FairyGroup.Controllers
                 using (var db = new FairyGroupEntities())
                 {
                     DateTime mindate = DateTime.Now.AddMonths(-3);
-                    var md = db.spPostBuilding_List(BuildingTypeID, priceID, ProvinceID, DistrictID, keySearch, mindate.Year.ToString() + mindate.Month.ToString().PadLeft(2, '0') + mindate.Day.ToString().PadLeft(2, '0')).ToList();
+                    var md = db.spPostBuilding_List(BuildingTypeID, priceID, ProvinceID, DistrictID, keySearch, mindate.Year.ToString() + mindate.Month.ToString().PadLeft(2, '0') + mindate.Day.ToString().PadLeft(2, '0')).Where(x => x.PostStatus != null && x.PostStatus != "Draft" && x.PostStatus != "Cancel").ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public JsonResult getPostBuildingByUser(int BuildingTypeID, int priceID, int ProvinceID, int DistrictID, string keySearch,int UserID)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    DateTime mindate = DateTime.Now.AddMonths(-3);
+                    var md = db.spPostBuilding_ListByUser(BuildingTypeID, priceID, ProvinceID, DistrictID
+                        , keySearch, mindate.Year.ToString() + mindate.Month.ToString().PadLeft(2, '0') + mindate.Day.ToString().PadLeft(2, '0'), UserID).ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public JsonResult getPostBuildingExclusive()
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    DateTime mindate = DateTime.Now.AddMonths(-3);
+                    var md = db.spPostBuilding_List(0, 0, 0, 0, "", mindate.Year.ToString() + mindate.Month.ToString().PadLeft(2, '0') + mindate.Day.ToString().PadLeft(2, '0')).Where(x => x.PostStatus != null && x.PostStatus != "Draft" && x.PostStatus != "Cancel" && x.PriorityID < 5).Take(5).ToList();
                     return Json(md, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -350,7 +394,9 @@ namespace FairyGroup.Controllers
             {
                 using (var db = new FairyGroupEntities())
                 {
-                    var md = db.spGetPostDetail(BuildingTypeID, PostBuildingID).ToList();
+                    PostBuildingDetailModel md = new PostBuildingDetailModel();
+                    md.mdPostGroupDetail = db.spGetPostGroupDetail(BuildingTypeID, PostBuildingID).ToList();
+                    md.mdPostDetail = db.spGetPostDetail(BuildingTypeID, PostBuildingID).ToList();
                     return Json(md, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -359,6 +405,321 @@ namespace FairyGroup.Controllers
                 throw ex;
             }
         }
+        public JsonResult getInitDataNewPost()
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    PostBuildingModel md = new PostBuildingModel();
+                    if (ViewBag.PostBuildingID != null)
+                    {
+                        int id = ViewBag.PostBuildingID;
+                        md.mdPost = db.PostBuildings.FirstOrDefault(x => x.PostBuildingID == id); 
+                    }
+                    else md.mdPost = new PostBuilding();
+                    md.mdPostType = (from b in db.PostTypes
+                                     select b).ToList();
+
+                    md.mdBuildingType = (from b in db.BuildingTypes
+                                        select b).ToList();
+
+                    md.mdProvinceGroup = (from p in db.ProvinceGroups
+                                          select p).ToList();
+                    md.mdProvince = (from p in db.Provinces
+                                     select p).ToList();
+                    md.mdDistrict = (from d in db.Districts
+                                     select d).ToList();
+                    md.mdSubDistrict = (from d in db.SubDistricts
+                                        select d).ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public JsonResult getImagePost(int PostBuildingID)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    var md = (from i in db.PostBuildingImgs
+                                  where i.PostBuildingID ==  PostBuildingID
+                                  select i).ToList();
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public JsonResult SavePostHeader(PostBuilding mdH)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    if (mdH.PostBuildingID == 0)
+                    {
+                        var u = (from s in db.Users 
+                              join c in db.UserTypes on s.UserTypeID  equals c.UserTypeID
+                             where s.UserID == mdH.UserID
+                            select c).SingleOrDefault();
+                        mdH.CreateDate = DateTime.Now;
+                        mdH.UpdateDate = DateTime.Now;
+                        mdH.PriorityID = u.PriorityID;
+                        var md = db.PostBuildings.Add(mdH);         
+                        db.SaveChanges();
+                        ViewBag.PostBuildingID = md.PostBuildingID;
+                        return Json(md, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        var md = db.PostBuildings.FirstOrDefault(x => x.PostBuildingID == mdH.PostBuildingID);
+                        md.BuildingTypeID = mdH.BuildingTypeID;
+                        md.PostTypeID = mdH.PostTypeID;
+                        md.SalePrice = mdH.SalePrice;
+                        md.ProvinceID = mdH.ProvinceID;
+                        md.DistrictID = mdH.DistrictID;
+                        md.SubDistrictID = mdH.SubDistrictID;                        
+                        md.Mobile = mdH.Mobile;
+                        md.Telephone = mdH.Telephone;
+                        md.Description = mdH.Description;
+                        md.PriorityID = mdH.PriorityID;
+                        md.UpdateDate = mdH.UpdateDate;
+                        md.DescriptionEn = mdH.DescriptionEn;
+                        md.PostTitle = mdH.PostTitle;
+                        md.PostTitleEn = mdH.PostTitleEn;
+                        md.isOwner = mdH.isOwner;
+                        md.AddressNo = mdH.AddressNo;
+                        md.RoadName = mdH.RoadName;
+                        md.LatitudeMap = mdH.LatitudeMap;
+                        md.LongitudeMap = mdH.LongitudeMap;
+                        md.UpdateDate = DateTime.Now;
+                        db.SaveChanges();
+                        ViewBag.PostBuildingID = md.PostBuildingID;
+                        return Json(md, JsonRequestBehavior.AllowGet);
+                    }
+                    
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public JsonResult SavePostDetail(spGetPostDetail_Result mdD)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    if (mdD.PostBuildingDetailValue == null) mdD.PostBuildingDetailValue = "";
+                    if (mdD.PostBuildingDetailID == 0)
+                    {
+                        PostBuildingDetail md = new PostBuildingDetail();
+                        md.PostBuildingID = mdD.PostBuildingID.Value;
+                        md.BuildingDetailID = mdD.BuildingDetailID;
+                        md.PostBuildingDetailValue = mdD.PostBuildingDetailValue.ToString();
+                        var mds = db.PostBuildingDetails.Add(md);
+                        db.SaveChanges();
+                        mdD.PostBuildingID = md.PostBuildingID;
+                        mdD.BuildingDetailID = md.BuildingDetailID;
+                        mdD.PostBuildingDetailValue = md.PostBuildingDetailValue;
+                        mdD.PostBuildingDetailID = md.PostBuildingDetailID;
+                    }
+                    else
+                    {
+                        var md = db.PostBuildingDetails.FirstOrDefault(x => x.PostBuildingDetailID == mdD.PostBuildingDetailID);
+                        md.PostBuildingDetailValue = mdD.PostBuildingDetailValue.ToString();
+                        db.SaveChanges();
+                    }
+                    return Json(mdD, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        [HttpPost]
+        public JsonResult PostBuldingUpload(HttpPostedFileBase[] Postfiles,int id)
+        {
+            try
+            {
+                if (Postfiles != null)
+                {
+
+                    foreach (var file in Postfiles)
+                    {
+                        // Some browsers send file names with full path.
+                        // We are only interested in the file name.
+                        string dtf = DateTime.Now.ToString("yyMMddHHmmss") + "_";
+                        var fileName = dtf + System.IO.Path.GetFileName(file.FileName);
+                        var directoryPath = "";// /BuildingImg/2016/000001/
+                        var savePath = "/BuildingImg/" + DateTime.Now.Year.ToString() + "/" + id.ToString();
+                        if (!System.IO.Directory.Exists(Server.MapPath("~"+savePath)))
+                        {
+                            System.IO.Directory.CreateDirectory(Server.MapPath("~" + savePath + "/"));
+                        }
+                        directoryPath = Server.MapPath("~" + savePath);
+                        var physicalPath = System.IO.Path.Combine(directoryPath, fileName);
+
+                        // The files are not actually saved in this demo
+                        file.SaveAs(physicalPath);
+
+                        using (var db = new FairyGroupEntities())
+                        {
+                            PostBuildingImg md = new PostBuildingImg();
+                            md.PostBuildingID = id;
+                            md.PathName = savePath + "/";
+                            md.FileName = fileName;
+                            md.CreateDate = DateTime.Now;
+                            db.PostBuildingImgs.Add(md);
+                            db.SaveChanges();
+                        }
+                    }
+                }
+
+
+
+                //if (ModelState.IsValid)
+                //{
+                //    var newProduct = Mapper.Map<ProductModel, Product>(model);
+                //    _productRepository.CreateProduct(newProduct);
+                //    _productRepository.SaveChanges();
+                //}
+                return Json("", JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public JsonResult PostBuldingConfirm(int id)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+
+                    var md = db.PostBuildings.FirstOrDefault(x => x.PostBuildingID == id);
+                    md.PostStatus = "Sale";
+                    db.SaveChanges();
+                    ViewBag.PostBuildingID = md.PostBuildingID;
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public JsonResult GetPostImg(int id)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    var md = (from im in db.PostBuildingImgs
+                              where im.PostBuildingID == id
+                              select im).ToList();
+                   
+                    return Json(md, JsonRequestBehavior.AllowGet);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public JsonResult DeleteImg(int ImgID)
+        {
+
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+
+                    var md = db.PostBuildingImgs.FirstOrDefault(x => x.PostBuildingImgID == ImgID);
+                    db.PostBuildingImgs.Remove(md);
+                    db.SaveChanges();
+                    return Json("", JsonRequestBehavior.AllowGet);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion PostBuilding
+
+        #region Regis
+        public JsonResult SaveUser(User mdUser)
+        {
+            try
+            {
+                using (var db = new FairyGroupEntities())
+                {
+                    if (mdUser.UserID == 0)
+                    {
+                        var u = new User();
+                        u.UserName = mdUser.UserName;
+                        u.UserTypeID = mdUser.UserTypeID;
+                        u.EmailAccount = mdUser.EmailAccount;
+                        u.FirstNameEN = mdUser.FirstNameEN;
+                        u.FirstNameTH = mdUser.FirstNameTH;
+                        u.LastNameEN = mdUser.LastNameEN;
+                        u.LastNameTH = mdUser.LastNameTH;
+                        u.Mobile = mdUser.Mobile;
+                        u.NickName = mdUser.NickName;
+                        u.Password = mdUser.Password;
+                        u.Phone = mdUser.Phone;
+                        u.Sex = mdUser.Sex;
+                        
+                        var md = db.Users.Add(u);
+                        db.SaveChanges();
+                        return Json(md, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        var md = db.Users.FirstOrDefault(x => x.UserID == mdUser.UserID);
+                        md.UserName = mdUser.UserName;
+                        md.UserTypeID = mdUser.UserTypeID;
+                        md.EmailAccount = mdUser.EmailAccount;
+                        md.FirstNameEN = mdUser.FirstNameEN;
+                        md.FirstNameTH = mdUser.FirstNameTH;
+                        md.LastNameEN = mdUser.LastNameEN;
+                        md.LastNameTH = mdUser.LastNameTH;
+                        md.Mobile = mdUser.Mobile;
+                        md.NickName = mdUser.NickName;
+                        //u.Password = mdUser.Password;
+                        md.Phone = mdUser.Phone;
+                        md.Sex = mdUser.Sex;                        
+                        db.SaveChanges();
+                        return Json(md, JsonRequestBehavior.AllowGet);
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion Regis
+
     }
 }

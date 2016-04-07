@@ -34,5 +34,7 @@ namespace FairyGroup.Models.DBFairyGroup
         public Nullable<int> ZipCode { get; set; }
         public string UpdateStr { get; set; }
         public string ImgName { get; set; }
+        public string PostStatus { get; set; }
+        public string PostTitle { get; set; }
     }
 }

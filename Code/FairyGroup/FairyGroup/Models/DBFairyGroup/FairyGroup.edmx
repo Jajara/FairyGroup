@@ -28,6 +28,9 @@
           <Property Name="DetailControlGroup" Type="varchar" MaxLength="20" />
           <Property Name="isRequired" Type="bit" />
           <Property Name="SortID" Type="int" />
+          <Property Name="Placeholder" Type="varchar" MaxLength="50" />
+          <Property Name="ColWidth" Type="int" />
+          <Property Name="UnitName" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="BuildingGroupDetail">
           <Key>
@@ -118,6 +121,7 @@
           <Property Name="RoadName" Type="varchar" MaxLength="200" />
           <Property Name="LatitudeMap" Type="varchar" MaxLength="50" />
           <Property Name="LongitudeMap" Type="varchar" MaxLength="50" />
+          <Property Name="PostStatus" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="PostBuildingDetail">
           <Key>
@@ -256,6 +260,15 @@
           <Parameter Name="KeySearch" Type="varchar(max)" Mode="In" />
           <Parameter Name="MINDATE" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="spPostBuilding_ListByUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="BuildingTypeID" Type="int" Mode="In" />
+          <Parameter Name="PriceID" Type="int" Mode="In" />
+          <Parameter Name="ProvinceID" Type="int" Mode="In" />
+          <Parameter Name="DistrictID" Type="int" Mode="In" />
+          <Parameter Name="KeySearch" Type="varchar(max)" Mode="In" />
+          <Parameter Name="MINDATE" Type="varchar" Mode="In" />
+          <Parameter Name="UserID" Type="int" Mode="In" />
+        </Function>
         <EntityContainer Name="FairyGroupModelStoreContainer">
           <EntitySet Name="Area" EntityType="Self.Area" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BuildingDetail" EntityType="Self.BuildingDetail" Schema="dbo" store:Type="Tables" />
@@ -291,7 +304,6 @@
           <EntitySet Name="CompanyProfiles" EntityType="FairyGroupModel.CompanyProfile" />
           <EntitySet Name="Districts" EntityType="FairyGroupModel.District" />
           <EntitySet Name="LogMails" EntityType="FairyGroupModel.LogMail" />
-          <EntitySet Name="PostBuildings" EntityType="FairyGroupModel.PostBuilding" />
           <EntitySet Name="PostBuildingDetails" EntityType="FairyGroupModel.PostBuildingDetail" />
           <EntitySet Name="PostBuildingImgs" EntityType="FairyGroupModel.PostBuildingImg" />
           <EntitySet Name="PostTypes" EntityType="FairyGroupModel.PostType" />
@@ -324,6 +336,16 @@
             <Parameter Name="KeySearch" Mode="In" Type="String" />
             <Parameter Name="MINDATE" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="PostBuildings" EntityType="FairyGroupModel.PostBuilding" />
+          <FunctionImport Name="spPostBuilding_ListByUser" ReturnType="Collection(FairyGroupModel.spPostBuilding_ListByUser_Result)">
+            <Parameter Name="BuildingTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="PriceID" Mode="In" Type="Int32" />
+            <Parameter Name="ProvinceID" Mode="In" Type="Int32" />
+            <Parameter Name="DistrictID" Mode="In" Type="Int32" />
+            <Parameter Name="KeySearch" Mode="In" Type="String" />
+            <Parameter Name="MINDATE" Mode="In" Type="String" />
+            <Parameter Name="UserID" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <EntityType Name="Area">
           <Key>
@@ -348,6 +370,9 @@
           <Property Name="DetailControlGroup" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="isRequired" Type="Boolean" />
           <Property Name="SortID" Type="Int32" />
+          <Property Name="Placeholder" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ColWidth" Type="Int32" />
+          <Property Name="UnitName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="BuildingGroupDetail">
           <Key>
@@ -411,33 +436,6 @@
           <Property Name="CreateDate" Type="DateTime" Precision="3" />
           <Property Name="LogMSG" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="SendStatus" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="PostBuilding">
-          <Key>
-            <PropertyRef Name="PostBuildingID" />
-          </Key>
-          <Property Name="PostBuildingID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="BuildingTypeID" Type="Int32" />
-          <Property Name="PostTypeID" Type="Int32" />
-          <Property Name="SalePrice" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="ProvinceID" Type="Int32" />
-          <Property Name="DistrictID" Type="Int32" />
-          <Property Name="SubDistrictID" Type="Int32" />
-          <Property Name="UserID" Type="Int32" />
-          <Property Name="Mobile" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Telephone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="CreateDate" Type="DateTime" Precision="3" />
-          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PriorityID" Type="Int32" />
-          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
-          <Property Name="DescriptionEn" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PostTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PostTitleEn" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="isOwner" Type="Boolean" />
-          <Property Name="AddressNo" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="RoadName" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="LatitudeMap" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="LongitudeMap" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="PostBuildingDetail">
           <Key>
@@ -560,6 +558,9 @@
           <Property Type="Int32" Name="PostBuildingID" Nullable="true" />
           <Property Type="Int32" Name="PostBuildingDetailID" Nullable="true" />
           <Property Type="String" Name="PostBuildingDetailValue" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="Placeholder" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="ColWidth" Nullable="true" />
+          <Property Type="String" Name="UnitName" Nullable="true" MaxLength="50" />
         </ComplexType>
         <ComplexType Name="spGetPostGroupDetail_Result">
           <Property Type="Int32" Name="BuildingGroupDetailID" Nullable="false" />
@@ -592,6 +593,61 @@
           <Property Type="Int32" Name="ZipCode" Nullable="true" />
           <Property Type="String" Name="UpdateStr" Nullable="true" MaxLength="20" />
           <Property Type="String" Name="ImgName" Nullable="true" MaxLength="1500" />
+          <Property Type="String" Name="PostStatus" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="PostTitle" Nullable="true" MaxLength="100" />
+        </ComplexType>
+        <EntityType Name="PostBuilding">
+          <Key>
+            <PropertyRef Name="PostBuildingID" />
+          </Key>
+          <Property Name="PostBuildingID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BuildingTypeID" Type="Int32" />
+          <Property Name="PostTypeID" Type="Int32" />
+          <Property Name="SalePrice" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ProvinceID" Type="Int32" />
+          <Property Name="DistrictID" Type="Int32" />
+          <Property Name="SubDistrictID" Type="Int32" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="Mobile" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Telephone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CreateDate" Type="DateTime" Precision="3" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PriorityID" Type="Int32" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
+          <Property Name="DescriptionEn" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PostTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PostTitleEn" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="isOwner" Type="Boolean" />
+          <Property Name="AddressNo" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="RoadName" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="LatitudeMap" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LongitudeMap" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PostStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <ComplexType Name="spPostBuilding_ListByUser_Result">
+          <Property Type="Int32" Name="PostBuildingID" Nullable="true" />
+          <Property Type="Int32" Name="BuildingTypeID" Nullable="true" />
+          <Property Type="Int32" Name="PostTypeID" Nullable="true" />
+          <Property Type="String" Name="SalePrice" Nullable="true" MaxLength="8000" />
+          <Property Type="Int32" Name="ProvinceID" Nullable="true" />
+          <Property Type="Int32" Name="DistrictID" Nullable="true" />
+          <Property Type="Int32" Name="SubDistrictID" Nullable="true" />
+          <Property Type="Int32" Name="UserID" Nullable="true" />
+          <Property Type="String" Name="Mobile" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Telephone" Nullable="true" MaxLength="50" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Description" Nullable="true" />
+          <Property Type="Int32" Name="PriorityID" Nullable="true" />
+          <Property Type="String" Name="BuildingTypeName" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="PostTypeName" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="ProvinceName" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="DistrictName" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="SubDistrictName" Nullable="true" MaxLength="200" />
+          <Property Type="Int32" Name="ZipCode" Nullable="true" />
+          <Property Type="String" Name="UpdateStr" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="ImgName" Nullable="true" MaxLength="1500" />
+          <Property Type="String" Name="PostStatus" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="PostTitle" Nullable="true" MaxLength="100" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -613,6 +669,9 @@
           <EntitySetMapping Name="BuildingDetails">
             <EntityTypeMapping TypeName="FairyGroupModel.BuildingDetail">
               <MappingFragment StoreEntitySet="BuildingDetail">
+                <ScalarProperty Name="UnitName" ColumnName="UnitName" />
+                <ScalarProperty Name="ColWidth" ColumnName="ColWidth" />
+                <ScalarProperty Name="Placeholder" ColumnName="Placeholder" />
                 <ScalarProperty Name="SortID" ColumnName="SortID" />
                 <ScalarProperty Name="isRequired" ColumnName="isRequired" />
                 <ScalarProperty Name="DetailControlGroup" ColumnName="DetailControlGroup" />
@@ -690,34 +749,6 @@
                 <ScalarProperty Name="SendTo" ColumnName="SendTo" />
                 <ScalarProperty Name="SendFrom" ColumnName="SendFrom" />
                 <ScalarProperty Name="SendID" ColumnName="SendID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PostBuildings">
-            <EntityTypeMapping TypeName="FairyGroupModel.PostBuilding">
-              <MappingFragment StoreEntitySet="PostBuilding">
-                <ScalarProperty Name="LongitudeMap" ColumnName="LongitudeMap" />
-                <ScalarProperty Name="LatitudeMap" ColumnName="LatitudeMap" />
-                <ScalarProperty Name="RoadName" ColumnName="RoadName" />
-                <ScalarProperty Name="AddressNo" ColumnName="AddressNo" />
-                <ScalarProperty Name="isOwner" ColumnName="isOwner" />
-                <ScalarProperty Name="PostTitleEn" ColumnName="PostTitleEn" />
-                <ScalarProperty Name="PostTitle" ColumnName="PostTitle" />
-                <ScalarProperty Name="DescriptionEn" ColumnName="DescriptionEn" />
-                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
-                <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
-                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
-                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="SubDistrictID" ColumnName="SubDistrictID" />
-                <ScalarProperty Name="DistrictID" ColumnName="DistrictID" />
-                <ScalarProperty Name="ProvinceID" ColumnName="ProvinceID" />
-                <ScalarProperty Name="SalePrice" ColumnName="SalePrice" />
-                <ScalarProperty Name="PostTypeID" ColumnName="PostTypeID" />
-                <ScalarProperty Name="BuildingTypeID" ColumnName="BuildingTypeID" />
-                <ScalarProperty Name="PostBuildingID" ColumnName="PostBuildingID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -856,6 +887,9 @@
                 <ScalarProperty Name="PostBuildingID" ColumnName="PostBuildingID" />
                 <ScalarProperty Name="PostBuildingDetailID" ColumnName="PostBuildingDetailID" />
                 <ScalarProperty Name="PostBuildingDetailValue" ColumnName="PostBuildingDetailValue" />
+                <ScalarProperty Name="Placeholder" ColumnName="Placeholder" />
+                <ScalarProperty Name="ColWidth" ColumnName="ColWidth" />
+                <ScalarProperty Name="UnitName" ColumnName="UnitName" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -900,6 +934,66 @@
                 <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
                 <ScalarProperty Name="UpdateStr" ColumnName="UpdateStr" />
                 <ScalarProperty Name="ImgName" ColumnName="ImgName" />
+                <ScalarProperty Name="PostStatus" ColumnName="PostStatus" />
+                <ScalarProperty Name="PostTitle" ColumnName="PostTitle" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="PostBuildings">
+            <EntityTypeMapping TypeName="FairyGroupModel.PostBuilding">
+              <MappingFragment StoreEntitySet="PostBuilding">
+                <ScalarProperty Name="PostStatus" ColumnName="PostStatus" />
+                <ScalarProperty Name="LongitudeMap" ColumnName="LongitudeMap" />
+                <ScalarProperty Name="LatitudeMap" ColumnName="LatitudeMap" />
+                <ScalarProperty Name="RoadName" ColumnName="RoadName" />
+                <ScalarProperty Name="AddressNo" ColumnName="AddressNo" />
+                <ScalarProperty Name="isOwner" ColumnName="isOwner" />
+                <ScalarProperty Name="PostTitleEn" ColumnName="PostTitleEn" />
+                <ScalarProperty Name="PostTitle" ColumnName="PostTitle" />
+                <ScalarProperty Name="DescriptionEn" ColumnName="DescriptionEn" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="SubDistrictID" ColumnName="SubDistrictID" />
+                <ScalarProperty Name="DistrictID" ColumnName="DistrictID" />
+                <ScalarProperty Name="ProvinceID" ColumnName="ProvinceID" />
+                <ScalarProperty Name="SalePrice" ColumnName="SalePrice" />
+                <ScalarProperty Name="PostTypeID" ColumnName="PostTypeID" />
+                <ScalarProperty Name="BuildingTypeID" ColumnName="BuildingTypeID" />
+                <ScalarProperty Name="PostBuildingID" ColumnName="PostBuildingID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="spPostBuilding_ListByUser" FunctionName="FairyGroupModel.Store.spPostBuilding_ListByUser">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FairyGroupModel.spPostBuilding_ListByUser_Result">
+                <ScalarProperty Name="PostBuildingID" ColumnName="PostBuildingID" />
+                <ScalarProperty Name="BuildingTypeID" ColumnName="BuildingTypeID" />
+                <ScalarProperty Name="PostTypeID" ColumnName="PostTypeID" />
+                <ScalarProperty Name="SalePrice" ColumnName="SalePrice" />
+                <ScalarProperty Name="ProvinceID" ColumnName="ProvinceID" />
+                <ScalarProperty Name="DistrictID" ColumnName="DistrictID" />
+                <ScalarProperty Name="SubDistrictID" ColumnName="SubDistrictID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
+                <ScalarProperty Name="BuildingTypeName" ColumnName="BuildingTypeName" />
+                <ScalarProperty Name="PostTypeName" ColumnName="PostTypeName" />
+                <ScalarProperty Name="ProvinceName" ColumnName="ProvinceName" />
+                <ScalarProperty Name="DistrictName" ColumnName="DistrictName" />
+                <ScalarProperty Name="SubDistrictName" ColumnName="SubDistrictName" />
+                <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
+                <ScalarProperty Name="UpdateStr" ColumnName="UpdateStr" />
+                <ScalarProperty Name="ImgName" ColumnName="ImgName" />
+                <ScalarProperty Name="PostStatus" ColumnName="PostStatus" />
+                <ScalarProperty Name="PostTitle" ColumnName="PostTitle" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

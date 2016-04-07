@@ -36,5 +36,6 @@ namespace FairyGroup.Models.DBFairyGroup
         public string RoadName { get; set; }
         public string LatitudeMap { get; set; }
         public string LongitudeMap { get; set; }
+        public string PostStatus { get; set; }
     }
 }

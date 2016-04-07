@@ -13,7 +13,6 @@
         <EntityTypeShape EntityType="FairyGroupModel.CompanyProfile" Width="1.5" PointX="4.75" PointY="3.75" />
         <EntityTypeShape EntityType="FairyGroupModel.District" Width="1.5" PointX="6.75" PointY="0.75" />
         <EntityTypeShape EntityType="FairyGroupModel.LogMail" Width="1.5" PointX="6.75" PointY="3.75" />
-        <EntityTypeShape EntityType="FairyGroupModel.PostBuilding" Width="1.5" PointX="0.75" PointY="7.75" />
         <EntityTypeShape EntityType="FairyGroupModel.PostBuildingDetail" Width="1.5" PointX="2.75" PointY="7.75" />
         <EntityTypeShape EntityType="FairyGroupModel.PostBuildingImg" Width="1.5" PointX="8.75" PointY="0.75" />
         <EntityTypeShape EntityType="FairyGroupModel.PostType" Width="1.5" PointX="8.75" PointY="3.75" />
@@ -25,6 +24,7 @@
         <EntityTypeShape EntityType="FairyGroupModel.SystemConfig" Width="1.5" PointX="10.75" PointY="3.75" />
         <EntityTypeShape EntityType="FairyGroupModel.User" Width="1.5" PointX="10.75" PointY="6.75" />
         <EntityTypeShape EntityType="FairyGroupModel.UserType" Width="1.5" PointX="2.75" PointY="11.75" />
+        <EntityTypeShape EntityType="FairyGroupModel.PostBuilding" Width="1.5" PointX="11.375" PointY="11.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
